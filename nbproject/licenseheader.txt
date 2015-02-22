@@ -1,0 +1,11 @@
+<#if licenseFirst??>
+${licenseFirst}
+</#if>
+${licensePrefix}zf2-cron-helper
+${licensePrefix}
+${licensePrefix}@link https://github.com/ondrejd/zf2-cron-helper for the canonical source repository
+${licensePrefix}@copyright Copyright (c) 2015 Ondřej Doněk.
+${licensePrefix}@license https://www.mozilla.org/MPL/2.0/ Mozilla Public License 2.0
+<#if licenseLast??>
+${licenseLast}
+</#if>

@@ -1,0 +1,5 @@
+docs/generated/*
+nbproject/private/
+vendor/
+composer.lock
+build.xml

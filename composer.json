@@ -1,0 +1,45 @@
+{
+	"name": "ondrejd/zf2-cron-helper",
+	"description": "Module for Zend Framework 2 that simplify dealing with CRON tasks in your PHP projects.",
+	"version": "0.1.0",
+	"type": "library",
+	"keywords": ["zf2", "zend", "module", "cron"],
+	"homepage": "https://github.com/ondrejd/zf2-cron-helper",
+	"license": "MPL-2.0",
+	"authors": [{
+		"name": "Ondrej Donek",
+		"email": "ondrejd@gmail.com",
+		"homepage": "http://ondrejdonek.blogspot.com/",
+		"role": "Developer"
+	}],
+	"support": {
+		"issues": "https://github.com/ondrejd/zf2-cron-helper/issues",
+		"source": "https://github.com/ondrejd/zf2-cron-helper"
+	},
+	"repositories": [{
+		"type": "composer",
+		"url": "https://packages.zendframework.com/"
+	}],
+	"autoload": {
+		"psr-0": {
+			"CronHelper\\": "src/"
+		},
+		"classmap": [
+			"./"
+		]
+	},
+	"require": {
+		"php": ">=5.3.3",
+		"zendframework/zend-console": ">=2.2.2",
+		"zendframework/zend-eventmanager": ">=2.2.2",
+		"zendframework/zend-http": ">=2.2.2",
+		"zendframework/zend-mvc": ">=2.2.2",
+		"zendframework/zend-stdlib": ">=2.2.2",
+		"zendframework/zend-view": ">=2.2.2",
+		"zendframework/zend-db": ">=2.2.2",
+		"zendframework/zend-inputfilter": ">=2.2.2",
+		"zendframework/zend-modulemanager": ">=2.2.2",
+		"zendframework/zend-serializer": ">=2.2.2",
+		"zendframework/zend-log": ">=2.2.2"
+	}
+}
