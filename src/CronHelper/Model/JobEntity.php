@@ -304,11 +304,18 @@ class JobEntity
 	/**
 	 * Returns duration of the job's execution.
 	 *
-	 * @return integer Time in miliseconds.
+	 * @return integer Time in seconds.
 	 * @todo Implement this!
 	 */
 	public function getDuration()
 	{
-		return 0;
+		$executed = $this->getExecuted();
+		$finished = $this->getFinished();
+
+		if (is_null($executed) || is_null($finished)) {
+			return 0;
+		}
+
+		return strtotime($finished) - strtotime($executed);
 	}
 }

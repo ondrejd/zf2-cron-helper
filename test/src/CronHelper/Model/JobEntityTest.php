@@ -39,6 +39,7 @@ class JobEntityTest extends PHPUnit_Framework_TestCase
 		$this->assertNull($entity->getScheduled(), '"scheduled" should initially be null');
 		$this->assertNull($entity->getExecuted(), '"executed" should initially be null');
 		$this->assertNull($entity->getFinished(), '"finished" should initially be null');
+		$this->assertSame($entity->getDuration(), 0, 'duration should be 0 ms');
 	}
 
 	public function testConstructWithValues()
@@ -53,6 +54,7 @@ class JobEntityTest extends PHPUnit_Framework_TestCase
 		$this->assertSame($this->data['scheduled'], $entity->getScheduled(), '"scheduled" was not set correctly');
 		$this->assertSame($this->data['executed'], $entity->getExecuted(), '"executed" was not set correctly');
 		$this->assertSame($this->data['finished'], $entity->getFinished(), '"finished" was not set correctly');
+		$this->assertSame($entity->getDuration(), 28, 'duration should be 28 ms');
 	}
 
 	public function testExchangeArrayWithNulls()
@@ -69,6 +71,7 @@ class JobEntityTest extends PHPUnit_Framework_TestCase
 		$this->assertNull($entity->getScheduled(), '"scheduled" should be null');
 		$this->assertNull($entity->getExecuted(), '"executed" should be null');
 		$this->assertNull($entity->getFinished(), '"finished" should be null');
+		$this->assertSame($entity->getDuration(), 0, 'duration should be 0 ms');
 	}
 
 	public function testExchangeArrayWithValues()
@@ -84,6 +87,7 @@ class JobEntityTest extends PHPUnit_Framework_TestCase
 		$this->assertSame($this->data['scheduled'], $entity->getScheduled(), '"scheduled" was not set correctly');
 		$this->assertSame($this->data['executed'], $entity->getExecuted(), '"executed" was not set correctly');
 		$this->assertSame($this->data['finished'], $entity->getFinished(), '"finished" was not set correctly');
+		$this->assertSame($entity->getDuration(), 28, 'duration should be 28 ms');
 	}
 
 	public function testGetArrayCopyWithNulls()
