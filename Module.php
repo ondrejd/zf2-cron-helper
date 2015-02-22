@@ -75,6 +75,30 @@ class Module implements AutoloaderProviderInterface, ConfigProviderInterface, Se
 	}
 
 	/**
+	 * Retrieve configuration for the service manager
+	 *
+	 * @see ServiceProviderInterface::getServiceConfig()
+	 * @return array
+	 */
+	public function getServiceConfig()
+	{
+		return array(
+			'service_manager' => array(
+				'factories' => array(/*
+					'Zend\Db\Adapter\Adapter' => 'Zend\Db\Adapter\AdapterServiceFactory',
+					'dbAdapter' => function ($sm) {
+						$config = $sm->get('config');
+						$config = $config['db'];
+						$dbAdapter = new Zend\Db\Adapter\Adapter($config);
+						return $dbAdapter;
+					},
+				*/),
+				'invocables' => array(),
+			),
+		);
+	}
+
+	/**
 	 * Listen to the application bootstrap event
 	 *
 	 * @param \Zend\Mvc\MvcEvent $event

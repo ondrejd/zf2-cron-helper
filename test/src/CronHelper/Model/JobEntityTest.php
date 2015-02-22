@@ -103,7 +103,7 @@ class JobEntityTest extends PHPUnit_Framework_TestCase
 
 	public function testGetArrayCopyWithValues()
 	{
-		$entity = new PostEntity($this->data);
+		$entity = new JobEntity($this->data);
 		$copy = $entity->getArrayCopy();
 		$this->assertSame($this->data['id'], $copy['id'], '"id" was not set correctly');
 		$this->assertSame($this->data['code'], $copy['code'], '"code" was not set correctly');

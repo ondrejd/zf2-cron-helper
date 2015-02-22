@@ -50,15 +50,5 @@ return array(
 		'driver' => 'Pdo_Sqlite',
 		'database' => '/home/ondrejd/.odtimetracker/db.sqlite'
 	),
-	'service_manager' => array(
-		'factories' => array(
-			'Zend\Db\Adapter\Adapter' => 'Zend\Db\Adapter\AdapterServiceFactory',
-			'dbAdapter' => function ($sm) {
-				$config = $sm->get('config');
-				$config = $config['db'];
-				$dbAdapter = new Zend\Db\Adapter\Adapter($config);
-				return $dbAdapter;
-			},
-		),
-	),*/
+*/
 );

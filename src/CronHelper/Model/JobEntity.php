@@ -98,15 +98,15 @@ class JobEntity
 	 */
 	public function exchangeArray($data = array())
 	{
-		!array_key_exists('id', $data) || $this->setId($data['id']);
-		!array_key_exists('code', $data) || $this->setCode($data['code']);
-		!array_key_exists('status', $data) || $this->setStatus($data['status']);
-		!array_key_exists('error_msg', $data) || $this->setErrorMsg($data['error_msg']);
-		!array_key_exists('stack_trace', $data) || $this->setStackTrace($data['stack_trace']);
-		!array_key_exists('created', $data) || $this->setCreated($data['created']);
-		!array_key_exists('scheduled', $data) || $this->setScheduled($data['scheduled']);
-		!array_key_exists('executed', $data) || $this->setExecuted($data['executed']);
-		!array_key_exists('finished', $data) || $this->setFinished($data['finished']);
+		$this->setId(array_key_exists('id', $data) ? $data['id'] : null);
+		$this->setCode(array_key_exists('code', $data) ? $data['code'] : null);
+		$this->setStatus(array_key_exists('status', $data) ? $data['status'] : null);
+		$this->setErrorMsg(array_key_exists('error_msg', $data) ? $data['error_msg'] : null);
+		$this->setStackTrace(array_key_exists('stack_trace', $data) ? $data['stack_trace'] : null);
+		$this->setCreated(array_key_exists('created', $data) ? $data['created'] : null);
+		$this->setScheduled(array_key_exists('scheduled', $data) ? $data['scheduled'] : null);
+		$this->setExecuted(array_key_exists('executed', $data) ? $data['executed'] : null);
+		$this->setFinished(array_key_exists('finished', $data) ? $data['finished'] : null);
 	}
 
 	/**
