@@ -18,6 +18,7 @@ return array(
 		),
 		'config_glob_paths' => array(
 			'config/module.config.php',
+			'test/config/cronhelper.config.php',
 		),
 	),
 	'service_manager' => array(
