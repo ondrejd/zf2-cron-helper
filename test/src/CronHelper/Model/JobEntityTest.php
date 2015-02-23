@@ -119,4 +119,14 @@ class JobEntityTest extends PHPUnit_Framework_TestCase
 		$this->assertSame($this->data['executed'], $copy['executed'], '"executed" was not set correctly');
 		$this->assertSame($this->data['finished'], $copy['finished'], '"finished" was not set correctly');
 	}
+
+	public function testBadStatus()
+	{
+		try {
+			$entity = new JobEntity(array('status' => 'BAD STATUS'));
+			$this->fail('Expected exception was not thrown!');
+		} catch (\InvalidArgumentException $e) {
+			$this->assertEquals('Bad status given!', $e->getMessage());
+		}
+	}
 }
