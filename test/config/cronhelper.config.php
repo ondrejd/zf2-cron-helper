@@ -11,7 +11,10 @@ return array(
 	'cron_helper' => array(
 		'db' => array(
 			'driver' => 'Pdo_Sqlite',
-			'database' => 'test/data/cronhelper.sqlite'
+			// You can use either file-based SQLite database:
+			//'database' => 'test/data/cronhelper.sqlite',
+			// Or just in memory SQLite database:
+			'database' => ':memory:',
 		),
 	),
 );

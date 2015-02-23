@@ -12,8 +12,31 @@ namespace CronHelperTest\Model;
 use PHPUnit_Framework_TestCase;
 use CronHelper\Model\JobEntity;
 use CronHelper\Model\JobMapper;
+use Zend\Db\Adapter\Adapter as DbAdapter;
 
 class JobMapperTest extends PHPUnit_Framework_TestCase
 {
-	// ...
+	private $dbAdapter;
+
+	protected function getAdapter()
+	{
+		if (!($this->dbAdapter instanceof DbAdapter)) {
+			$config = array(
+				'driver' => 'Pdo_Sqlite',
+				'database' => ':memory:',
+			);
+
+			$this->dbAdapter = new DbAdapter($config);
+		}
+
+		return $this->dbAdapter;
+	}
+
+	public function testConstructor()
+	{
+		$adapter = $this->getAdapter();
+		$mapper = new \CronHelper\Model\JobMapper($adapter);
+
+		$this->assertInstanceOf('CronHelper\Model\JobMapper', $mapper);
+	}
 }
