@@ -10,8 +10,6 @@
 namespace CronHelperTest\Model;
 
 use PHPUnit_Framework_TestCase;
-use CronHelper\Model\JobEntity;
-use CronHelper\Model\JobMapper;
 use Zend\Db\Adapter\Adapter as DbAdapter;
 
 class JobMapperTest extends PHPUnit_Framework_TestCase
@@ -35,8 +33,29 @@ class JobMapperTest extends PHPUnit_Framework_TestCase
 	public function testConstructor()
 	{
 		$adapter = $this->getAdapter();
+
+		$mapper1 = new \CronHelper\Model\JobMapper($adapter);
+		$this->assertInstanceOf('CronHelper\Model\JobMapper', $mapper1);
+		$this->assertSame(\CronHelper\Model\JobMapper::TABLE_NAME, $mapper1->getTableName());
+
+		$mapper2 = new \CronHelper\Model\JobMapper($adapter, 'test');
+		$this->assertInstanceOf('CronHelper\Model\JobMapper', $mapper2);
+		$this->assertSame('test', $mapper2->getTableName());
+	}
+
+	/**
+	 * @depends testConstructor
+	 */
+	public function testDataOperations()
+	{
+		$adapter = $this->getAdapter();
 		$mapper = new \CronHelper\Model\JobMapper($adapter);
 
-		$this->assertInstanceOf('CronHelper\Model\JobMapper', $mapper);
+		// 1) Now we have empty table
+		$resultSet1 = $mapper->fetchAll();
+		$this->assertInstanceOf('Zend\Db\ResultSet\HydratingResultSet', $resultSet1);
+		$this->assertSame(0, $resultSet1->count());
+
+		// ...
 	}
 }
