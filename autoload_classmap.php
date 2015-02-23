@@ -11,4 +11,5 @@ return array(
 	'CronHelper\Controller\IndexController' => __DIR__ . '/src/CronHelper/Controller/IndexController.php',
 	'CronHelper\Model\JobEntity' => __DIR__ . '/src/CronHelper/Model/JobEntity.php',
 	'CronHelper\Model\JobMapper' => __DIR__ . '/src/CronHelper/Model/JobMapper.php',
+	'CronHelper\Model\JobTable' => __DIR__ . '/src/CronHelper/Model/JobTable.php',
 );

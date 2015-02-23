@@ -14,33 +14,34 @@ use Zend\Db\Adapter\Adapter as DbAdapter;
 
 class JobMapperTest extends PHPUnit_Framework_TestCase
 {
-	private $dbAdapter;
+	private $data = array(
+		'id' => 1,
+		'code' => 'foo',
+		'status' => \CronHelper\Model\JobEntity::STATUS_SUCCESS,
+		'error_msg' => null,
+		'stack_trace' => null,
+		'created' => '2015-02-22 21:47:00',
+		'scheduled' => '2015-02-23 00:00:00',
+		'executed' => '2015-02-23 00:00:02',
+		'finished' => '2015-02-23 00:00:30',
+		//duration => 28 sec
+	);
 
-	protected function getAdapter()
+	private function getAdapterConfig()
 	{
-		if (!($this->dbAdapter instanceof DbAdapter)) {
-			$config = array(
-				'driver' => 'Pdo_Sqlite',
-				'database' => ':memory:',
-			);
-
-			$this->dbAdapter = new DbAdapter($config);
-		}
-
-		return $this->dbAdapter;
+		return array(
+			'driver' => 'Pdo_Sqlite',
+			'database' => ':memory:',
+		);
 	}
 
 	public function testConstructor()
 	{
-		$adapter = $this->getAdapter();
+		$adapter = new DbAdapter($this->getAdapterConfig());
 
-		$mapper1 = new \CronHelper\Model\JobMapper($adapter);
-		$this->assertInstanceOf('CronHelper\Model\JobMapper', $mapper1);
-		$this->assertSame(\CronHelper\Model\JobMapper::TABLE_NAME, $mapper1->getTableName());
-
-		$mapper2 = new \CronHelper\Model\JobMapper($adapter, 'test');
-		$this->assertInstanceOf('CronHelper\Model\JobMapper', $mapper2);
-		$this->assertSame('test', $mapper2->getTableName());
+		$mapper = new \CronHelper\Model\JobMapper($adapter);
+		$this->assertInstanceOf('CronHelper\Model\JobMapper', $mapper);
+		$this->assertSame(\CronHelper\Model\JobTable::TABLE_NAME, $mapper->getTableName());
 	}
 
 	/**
@@ -48,14 +49,27 @@ class JobMapperTest extends PHPUnit_Framework_TestCase
 	 */
 	public function testDataOperations()
 	{
-		$adapter = $this->getAdapter();
+		$adapter = new DbAdapter($this->getAdapterConfig());
+		$table = new \CronHelper\Model\JobTable($adapter);
 		$mapper = new \CronHelper\Model\JobMapper($adapter);
 
-		// 1) Now we have empty table
+		// 1) We need to create table
+		$table->create();
+
+		// 2) Now we have empty table
 		$resultSet1 = $mapper->fetchAll();
 		$this->assertInstanceOf('Zend\Db\ResultSet\HydratingResultSet', $resultSet1);
 		$this->assertSame(0, $resultSet1->count());
 
-		// ...
+		// 3) Insert new job
+		$job = new \CronHelper\Model\JobEntity($this->data);
+		$this->assertInstanceOf('CronHelper\Model\JobEntity', $job);
+		$newJob = $mapper->save($job);
+		$this->assertNotSame(null, $newJob->getId());
+
+		// 4) Now we should have table with one row
+		$resultSet2 = $mapper->fetchAll();
+		$this->assertInstanceOf('Zend\Db\ResultSet\HydratingResultSet', $resultSet2);
+		//$this->assertSame(1, $resultSet2->count());
 	}
 }

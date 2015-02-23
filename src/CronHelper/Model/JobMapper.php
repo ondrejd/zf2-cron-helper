@@ -26,14 +26,9 @@ use Zend\Stdlib\Hydrator\ClassMethods;
 class JobMapper
 {
 	/**
-	 * @var string
-	 */
-	const TABLE_NAME = 'cron_helper_job';
-
-	/**
 	 * @var string $tableName
 	 */
-	protected $tableName;
+	protected $tableName = JobTable::TABLE_NAME;
 
 	/**
 	 * @var AdapterInterface $dbAdapter
@@ -49,13 +44,11 @@ class JobMapper
 	 * Constructor.
 	 *
 	 * @param AdapterInterface $dbAdapter
-	 * @param string $tableName (Optional.)
 	 * @return void
 	 */
-	public function __construct(AdapterInterface $dbAdapter, $tableName = self::TABLE_NAME)
+	public function __construct(AdapterInterface $dbAdapter)
 	{
 		$this->dbAdapter = $dbAdapter;
-		$this->tableName = $tableName;
 
 		$this->sql = new Sql($dbAdapter);
 		$this->sql->setTable($this->tableName);
@@ -78,7 +71,7 @@ class JobMapper
 	 */
 	public function fetchAll()
 	{
-		return $this->fetchByWhere(new Where);
+		return $this->fetchByWhere(new Where, false);
 	}
 
 	/**
@@ -107,7 +100,6 @@ class JobMapper
 
 		$results = $stmt->execute();
 		$resultSet->initialize($results);
-		$resultSet->buffer();
 
 		if ($resultSet->count() == 0 && $trimResultSetIfOneRow === true) {
 			return null;
@@ -148,12 +140,12 @@ class JobMapper
 
 		if ((int) $job->getId() == 0) {
 			$query = $this->sql->insert();
-			$query->set($job->getArrayCopy());
-			$query->where(array('id' => $job->getId()));
+			$query->values($job->getArrayCopy());
 		}
 		else {
 			$query = $this->sql->update();
-			$query->values($job->getArrayCopy());
+			$query->set($job->getArrayCopy());
+			$query->where(array('id' => $job->getId()));
 		}
 
 		$stmt = $this->sql->prepareStatementForSqlObject($query);

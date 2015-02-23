@@ -11,10 +11,6 @@ namespace CronHelper\Controller;
 
 use Zend\Console\ColorInterface as ConsoleColor;
 use Zend\Console\Request as ConsoleRequest;
-use Zend\Db\Sql\Ddl;
-use Zend\Db\Sql\Ddl\Column;
-use Zend\Db\Sql\Ddl\Constraint;
-use Zend\Db\Sql\Sql;
 use Zend\Mvc\Controller\AbstractActionController;
 
 /**
@@ -66,7 +62,8 @@ class IndexController extends AbstractActionController
 		$console = $this->getConsole();
 
 		try {
-			$this->createDatabaseTable();
+			$table = new \CronHelper\Model\JobTable($adapter);
+			$table->create();
 		} catch (\Exception $exception) {
 			$console->writeLine('Creating database table failed!', ConsoleColor::LIGHT_RED);
 			return;
@@ -90,7 +87,8 @@ class IndexController extends AbstractActionController
 		$console = $this->getConsole();
 
 		try {
-			$this->truncateDatabaseTable();
+			$table = new \CronHelper\Model\JobTable($adapter);
+			$table->truncate();
 		} catch (\Exception $exception) {
 			$console->writeLine('Truncating database table failed!', ConsoleColor::LIGHT_RED);
 			return;
@@ -114,70 +112,13 @@ class IndexController extends AbstractActionController
 		$console = $this->getConsole();
 
 		try {
-			$this->dropDatabaseTable();
+			$table = new \CronHelper\Model\JobTable($adapter);
+			$table->drop();
 		} catch (\Exception $exception) {
 			$console->writeLine('Dropping database table failed!', ConsoleColor::LIGHT_RED);
 			return;
 		}
 
 		$console->writeLine('Storage was successfully destroyed!', ConsoleColor::LIGHT_GREEN);
-	}
-
-	/**
-	 * Create database table.
-	 *
-	 * @return void
-	 */
-	private function createDatabaseTable()
-	{
-		$adapter = $this->getServiceLocator()->get('dbAdapter');
-		$mapper = new \CronHelper\Model\JobMapper($adapter);
-
-		$ddl = new Ddl\CreateTable();
-		$ddl->setTable($mapper->getTableName());
-		$ddl->addColumn(new Column\Integer('id'));
-		$ddl->addColumn(new Column\Varchar('code', 55));
-		$ddl->addColumn(new Column\Varchar('status', 55));
-		$ddl->addColumn(new Column\Text('error_msg'));
-		$ddl->addColumn(new Column\Text('stack_trace'));
-		$ddl->addColumn(new Column\Varchar('created', 256));
-		$ddl->addColumn(new Column\Varchar('scheduled', 256));
-		$ddl->addColumn(new Column\Varchar('executed', 256));
-		$ddl->addColumn(new Column\Varchar('finished', 256));
-		$ddl->addConstraint(new Constraint\PrimaryKey('id'));
-
-		$sql = (new Sql($adapter))->getSqlStringForSqlObject($ddl);
-
-		$adapter->query($sql, $adapter::QUERY_MODE_EXECUTE);
-	}
-
-	/**
-	 * Drop database table.
-	 *
-	 * @return void
-	 */
-	private function dropDatabaseTable()
-	{
-		$adapter = $this->getServiceLocator()->get('dbAdapter');
-		$mapper = new \CronHelper\Model\JobMapper($adapter);
-
-		$ddl = new Ddl\DropTable($mapper->getTableName());
-		$sql = (new Sql($adapter))->getSqlStringForSqlObject($ddl);
-
-		$adapter->query($sql, $adapter::QUERY_MODE_EXECUTE);
-	}
-
-	/**
-	 * Truncate database table.
-	 *
-	 * @return void
-	 */
-	private function truncateDatabaseTable()
-	{
-		$adapter = $this->getServiceLocator()->get('dbAdapter');
-		$mapper = new \CronHelper\Model\JobMapper($adapter);
-		$where = new \Zend\Db\Sql\Where();
-
-		$mapper->deleteByWhere($where);
 	}
 }
