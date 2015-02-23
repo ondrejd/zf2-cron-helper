@@ -7,4 +7,22 @@
  * @license https://www.mozilla.org/MPL/2.0/ Mozilla Public License 2.0
  */
 
-return array();
+return array(
+    'modules' => array(
+		'CronHelper'
+	),
+	'module_listener_options' => array(
+		'module_paths' => array(
+			'module',
+			'vendor',
+		),
+		'config_glob_paths' => array(
+			'config/module.config.php',
+		),
+	),
+	'service_manager' => array(
+		'factories' => array(
+		),
+	),
+);
+

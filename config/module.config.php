@@ -13,39 +13,39 @@ return array(
 			'CronHelper\Controller\Index' => 'CronHelper\Controller\IndexController',
 		),
 	),
-	'service_manager' => array(
-		'factories' => array(),
-		'invokables' => array(),
+	'console' => array(
+		'router' => array(
+			'routes' => array(
+				'cronhelper_storage_create' => array(
+					'options' => array(
+						'route' => 'db create',
+						'defaults' => array(
+							'controller' => 'CronHelper\Controller\Index',
+							'action' => 'storage-create',
+						),
+					),
+				),
+				'cronhelper_storage_clear' => array(
+					'options' => array(
+						'route' => 'db clear',
+						'defaults' => array(
+							'controller' => 'CronHelper\Controller\Index',
+							'action' => 'storage-clear',
+						),
+					),
+				),
+				'cronhelper_storage_destroy' => array(
+					'options' => array(
+						'route' => 'db destroy',
+						'defaults' => array(
+							'controller' => 'CronHelper\Controller\Index',
+							'action' => 'storage-destroy',
+						),
+					),
+				),
+			),
+		),
 	),
-	'console' => array('router' => array('routes' => array(
-		'cron_db_create' => array(
-			'options' => array(
-				'route' => 'db create',
-				'defaults' => array(
-					'controller' => 'CronHelper\Controller\Index',
-					'action' => 'storage_create',
-				),
-			),
-		),
-		'cron_db_clear' => array(
-			'options' => array(
-				'route' => 'db clear',
-				'defaults' => array(
-					'controller' => 'CronHelper\Controller\Index',
-					'action' => 'storage_clear',
-				),
-			),
-		),
-		'cron_db_destroy' => array(
-			'options' => array(
-				'route' => 'db destroy',
-				'defaults' => array(
-					'controller' => 'CronHelper\Controller\Index',
-					'action' => 'storage_destroy',
-				),
-			),
-		),
-	))),
 /*	'db' => array(
 		'driver' => 'Pdo_Sqlite',
 		'database' => '/home/ondrejd/.odtimetracker/db.sqlite'

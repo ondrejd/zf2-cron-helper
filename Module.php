@@ -12,12 +12,18 @@ namespace CronHelper;
 use Zend\ModuleManager\Feature\AutoloaderProviderInterface;
 use Zend\ModuleManager\Feature\ConfigProviderInterface;
 use Zend\ModuleManager\Feature\ServiceProviderInterface;
-use Zend\Mvc\ModuleRouteListener;
+use Zend\ModuleManager\Feature\ConsoleBannerProviderInterface;
+use Zend\ModuleManager\Feature\ConsoleUsageProviderInterface;
+use Zend\Console\Adapter\AdapterInterface as Console;
 
 /**
+ * CronHelper module.
+ *
  * @package CronHelper
  */
-class Module implements AutoloaderProviderInterface, ConfigProviderInterface, ServiceProviderInterface
+class Module implements AutoloaderProviderInterface,
+	ConfigProviderInterface, ServiceProviderInterface,
+	ConsoleBannerProviderInterface, ConsoleUsageProviderInterface
 {
 	/**
 	 * @var string The module's namespace
@@ -32,7 +38,6 @@ class Module implements AutoloaderProviderInterface, ConfigProviderInterface, Se
 	/**
 	 * Retrieve autoloader configuration for this module
 	 *
-	 * @see AutoloaderProviderInterface::getAutoloaderConfig()
 	 * @return array
 	 */
 	public function getAutoloaderConfig()
@@ -52,7 +57,6 @@ class Module implements AutoloaderProviderInterface, ConfigProviderInterface, Se
 	/**
 	 * Retrieve configuration for this module
 	 *
-	 * @see ConfigProviderInterface::getConfig()
 	 * @return array
 	 */
 	public function getConfig()
@@ -61,11 +65,22 @@ class Module implements AutoloaderProviderInterface, ConfigProviderInterface, Se
 	}
 
 	/**
+	 * Returns console banner.
+	 *
+	 * @param Console $console
+	 * @return string
+	 */
+	public function getConsoleBanner(Console $console)
+	{
+		return 'ondrejd/zf2-cron-helper 0.1';
+	}
+
+	/**
 	 * Provide console usage messages for console endpoints
 	 *
 	 * @return array
 	 */
-	public function getConsoleUsage()
+	public function getConsoleUsage(Console $console)
 	{
 		return array(
 			'db create' => 'Create storage for cron-helper',
@@ -77,14 +92,13 @@ class Module implements AutoloaderProviderInterface, ConfigProviderInterface, Se
 	/**
 	 * Retrieve configuration for the service manager
 	 *
-	 * @see ServiceProviderInterface::getServiceConfig()
 	 * @return array
 	 */
 	public function getServiceConfig()
 	{
 		return array(
 			'service_manager' => array(
-				'factories' => array(/*
+				'factories' => array(
 					'Zend\Db\Adapter\Adapter' => 'Zend\Db\Adapter\AdapterServiceFactory',
 					'dbAdapter' => function ($sm) {
 						$config = $sm->get('config');
@@ -92,25 +106,9 @@ class Module implements AutoloaderProviderInterface, ConfigProviderInterface, Se
 						$dbAdapter = new Zend\Db\Adapter\Adapter($config);
 						return $dbAdapter;
 					},
-				*/),
-				'invocables' => array(),
+				),
+				'invokables' => array(),
 			),
 		);
-	}
-
-	/**
-	 * Listen to the application bootstrap event
-	 *
-	 * @param \Zend\Mvc\MvcEvent $event
-	 * @return void
-	 */
-	public function onBootstrap($event)
-	{
-		$eventManager = $event->getApplication()->getEventManager();
-		$moduleRouteListener = new ModuleRouteListener();
-		$moduleRouteListener->attach($eventManager);
-
-		$dbAdapter = $event->getApplication()->getServiceManager()->get('dbAdapter');
-		\Zend\Db\TableGateway\Feature\GlobalAdapterFeature::setStaticAdapter($dbAdapter);
 	}
 }

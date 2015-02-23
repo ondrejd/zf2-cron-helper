@@ -9,11 +9,9 @@
 
 namespace CronHelperTest;
 
-use CronHelperTest\Model\JobEntity;
 use Zend\Loader\AutoloaderFactory;
 use Zend\Mvc\Service\ServiceManagerConfig;
 use Zend\ServiceManager\ServiceManager;
-use Zend\Db\Adapter\Adapter as DbAdapter;
 
 error_reporting(E_ALL | E_STRICT);
 chdir(__DIR__);
@@ -23,7 +21,6 @@ chdir(__DIR__);
  */
 class Bootstrap
 {
-	protected static $databaseAdapter;
 	protected static $serviceManager;
 
 	public static function init()
@@ -50,8 +47,6 @@ class Bootstrap
 		$serviceManager->get('ModuleManager')->loadModules();
 
 		static::$serviceManager = $serviceManager;
-
-		static::initDatabaseAdapter();
 	}
 
 	public static function chroot()
@@ -81,19 +76,6 @@ class Bootstrap
 				),
 			),
 		));
-	}
-
-	protected static function initDatabaseAdapter()
-	{
-		/*
-		static::$databaseAdapter = new DbAdapter(array(
-			'driver' => 'Pdo_Sqlite',
-			'database' => '/home/ondrejd/.odtimetracker/db.sqlite'
-		));
-
-		\Zend\Db\TableGateway\Feature\GlobalAdapterFeature::setStaticAdapter(static::$databaseAdapter);
-		static::$serviceManager->setService('db', static::$databaseAdapter);
-		*/
 	}
 
 	protected static function findParentPath($path)
