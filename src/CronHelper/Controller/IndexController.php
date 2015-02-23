@@ -10,8 +10,12 @@
 namespace CronHelper\Controller;
 
 use Zend\Console\ColorInterface as ConsoleColor;
-use Zend\Mvc\Controller\AbstractActionController;
 use Zend\Console\Request as ConsoleRequest;
+use Zend\Db\Sql\Ddl;
+use Zend\Db\Sql\Ddl\Column;
+use Zend\Db\Sql\Ddl\Constraint;
+use Zend\Db\Sql\Sql;
+use Zend\Mvc\Controller\AbstractActionController;
 
 /**
  * Main CronHelper controller.
@@ -23,18 +27,19 @@ use Zend\Console\Request as ConsoleRequest;
 class IndexController extends AbstractActionController
 {
 	/**
-	 * @var Zend\Console\Adapter\AdapterInterface $console
+	 * @var \Zend\Console\Adapter\AdapterInterface $console
 	 */
 	private $console;
 
 	/**
-	 * @return Zend\Console\Adapter\AdapterInterface
+	 * @return \Zend\Console\Adapter\AdapterInterface
 	 */
 	protected function getConsole()
 	{
-		if (!$this->console instanceof Zend\Console\Adapter\AdapterInterface) {
+		if (!$this->console instanceof \Zend\Console\Adapter\AdapterInterface) {
 			$this->console = $this->getServiceLocator()->get('console');
 		}
+
 		return $this->console;
 	}
 
@@ -59,9 +64,15 @@ class IndexController extends AbstractActionController
         }
 
 		$console = $this->getConsole();
-		$console->writeLine('TODO Create storage', ConsoleColor::LIGHT_RED);
 
-		// ...
+		try {
+			$this->createDatabaseTable();
+		} catch (\Exception $exception) {
+			$console->writeLine('Creating database table failed!', ConsoleColor::LIGHT_RED);
+			return;
+		}
+
+		$console->writeLine('Storage was successfully created!', ConsoleColor::LIGHT_GREEN);
 	}
 
 	/**
@@ -77,16 +88,22 @@ class IndexController extends AbstractActionController
         }
 
 		$console = $this->getConsole();
-		$console->writeLine('TODO Clear storage', ConsoleColor::LIGHT_RED);
 
-		// ...
+		try {
+			$this->truncateDatabaseTable();
+		} catch (\Exception $exception) {
+			$console->writeLine('Truncating database table failed!', ConsoleColor::LIGHT_RED);
+			return;
+		}
+
+		$console->writeLine('Storage was successfully cleared!', ConsoleColor::LIGHT_GREEN);
 	}
 
 	/**
 	 * Destroy storage.
-	 * @throws \RuntimeException Whenever is action accessed not via console request.
 	 *
 	 * @return void
+	 * @throws \RuntimeException Whenever is action accessed not via console request.
 	 */
 	public function storageDestroyAction()
 	{
@@ -95,8 +112,72 @@ class IndexController extends AbstractActionController
         }
 
 		$console = $this->getConsole();
-		$console->writeLine('TODO Destroy storage', ConsoleColor::LIGHT_RED);
 
-		// ...
+		try {
+			$this->dropDatabaseTable();
+		} catch (\Exception $exception) {
+			$console->writeLine('Dropping database table failed!', ConsoleColor::LIGHT_RED);
+			return;
+		}
+
+		$console->writeLine('Storage was successfully destroyed!', ConsoleColor::LIGHT_GREEN);
+	}
+
+	/**
+	 * Create database table.
+	 *
+	 * @return void
+	 */
+	private function createDatabaseTable()
+	{
+		$adapter = $this->getServiceLocator()->get('dbAdapter');
+		$mapper = new \CronHelper\Model\JobMapper($adapter);
+
+		$ddl = new Ddl\CreateTable();
+		$ddl->setTable($mapper->getTableName());
+		$ddl->addColumn(new Column\Integer('id'));
+		$ddl->addColumn(new Column\Varchar('code', 55));
+		$ddl->addColumn(new Column\Varchar('status', 55));
+		$ddl->addColumn(new Column\Text('error_msg'));
+		$ddl->addColumn(new Column\Text('stack_trace'));
+		$ddl->addColumn(new Column\Varchar('created', 256));
+		$ddl->addColumn(new Column\Varchar('scheduled', 256));
+		$ddl->addColumn(new Column\Varchar('executed', 256));
+		$ddl->addColumn(new Column\Varchar('finished', 256));
+		$ddl->addConstraint(new Constraint\PrimaryKey('id'));
+
+		$sql = (new Sql($adapter))->getSqlStringForSqlObject($ddl);
+
+		$adapter->query($sql, $adapter::QUERY_MODE_EXECUTE);
+	}
+
+	/**
+	 * Drop database table.
+	 *
+	 * @return void
+	 */
+	private function dropDatabaseTable()
+	{
+		$adapter = $this->getServiceLocator()->get('dbAdapter');
+		$mapper = new \CronHelper\Model\JobMapper($adapter);
+
+		$ddl = new Ddl\DropTable($mapper->getTableName());
+		$sql = (new Sql($adapter))->getSqlStringForSqlObject($ddl);
+
+		$adapter->query($sql, $adapter::QUERY_MODE_EXECUTE);
+	}
+
+	/**
+	 * Truncate database table.
+	 *
+	 * @return void
+	 */
+	private function truncateDatabaseTable()
+	{
+		$adapter = $this->getServiceLocator()->get('dbAdapter');
+		$mapper = new \CronHelper\Model\JobMapper($adapter);
+		$where = new \Zend\Db\Sql\Where();
+
+		$mapper->deleteByWhere($where);
 	}
 }

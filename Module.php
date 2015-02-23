@@ -9,12 +9,13 @@
 
 namespace CronHelper;
 
+use Zend\Console\Adapter\AdapterInterface as Console;
+use Zend\Db\Adapter\Adapter as DbAdapter;
 use Zend\ModuleManager\Feature\AutoloaderProviderInterface;
 use Zend\ModuleManager\Feature\ConfigProviderInterface;
 use Zend\ModuleManager\Feature\ServiceProviderInterface;
 use Zend\ModuleManager\Feature\ConsoleBannerProviderInterface;
 use Zend\ModuleManager\Feature\ConsoleUsageProviderInterface;
-use Zend\Console\Adapter\AdapterInterface as Console;
 
 /**
  * CronHelper module.
@@ -97,17 +98,24 @@ class Module implements AutoloaderProviderInterface,
 	public function getServiceConfig()
 	{
 		return array(
-			'service_manager' => array(
-				'factories' => array(
-					'Zend\Db\Adapter\Adapter' => 'Zend\Db\Adapter\AdapterServiceFactory',
-					'dbAdapter' => function ($sm) {
-						$config = $sm->get('config');
-						$config = $config['db'];
-						$dbAdapter = new Zend\Db\Adapter\Adapter($config);
-						return $dbAdapter;
-					},
-				),
-				'invokables' => array(),
+			'factories' => array(
+				'Zend\Db\Adapter\Adapter' => 'Zend\Db\Adapter\AdapterServiceFactory',
+				'dbAdapter' => function ($sm) {
+					$config = $sm->get('config');
+
+					if (!array_key_exists('cron_helper', $config)) {
+						throw new \RuntimeException('Module "cron_helper" is missing a proper configuration!');
+					}
+
+					$config = $config['cron_helper'];
+
+					if (!array_key_exists('db', $config)) {
+						throw new \RuntimeException('Module "cron_helper" is missing a proper configuration!');
+					}
+
+					$dbAdapter = new DbAdapter($config['db']);
+					return $dbAdapter;
+				},
 			),
 		);
 	}
