@@ -1,13 +1,30 @@
-<phpunit
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/4.5/phpunit.xsd"
-	bootstrap="./bootstrap.php"
-	colors="true"
-	processIsolation="true"
-	verbose="false">
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/4.5/phpunit.xsd"
+          bootstrap="./bootstrap.php"
+          colors="true"
+          processIsolation="true"
+          verbose="false">
     <testsuites>
         <testsuite>
             <directory>./</directory>
         </testsuite>
     </testsuites>
+	<filter>
+		<whitelist>
+			<directory suffix=".php">../src/</directory>
+			<exclude>
+				<directory>../vendor/</directory>
+			</exclude>
+		</whitelist>
+	</filter>
+	<logging>
+		<log
+			highlowerbound="80"
+			lowupperbound="50"
+			highlight="true"
+			yui="true"
+			charset="UTF-8"
+			target="./log/report"
+			type="coverage-html"/>
+	</logging>
 </phpunit>

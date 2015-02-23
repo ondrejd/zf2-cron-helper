@@ -1,5 +1,6 @@
 docs/generated/*
 nbproject/private/
+test/log/report/*
 vendor/
 composer.lock
 build.xml
