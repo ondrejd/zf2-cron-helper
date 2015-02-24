@@ -60,6 +60,7 @@ class IndexController extends AbstractActionController
         }
 
 		$console = $this->getConsole();
+		$adapter = $this->getServiceLocator()->get('dbAdapter');
 
 		try {
 			$table = new \CronHelper\Model\JobTable($adapter);
@@ -85,6 +86,7 @@ class IndexController extends AbstractActionController
         }
 
 		$console = $this->getConsole();
+		$adapter = $this->getServiceLocator()->get('dbAdapter');
 
 		try {
 			$table = new \CronHelper\Model\JobTable($adapter);
@@ -110,6 +112,7 @@ class IndexController extends AbstractActionController
         }
 
 		$console = $this->getConsole();
+		$adapter = $this->getServiceLocator()->get('dbAdapter');
 
 		try {
 			$table = new \CronHelper\Model\JobTable($adapter);
