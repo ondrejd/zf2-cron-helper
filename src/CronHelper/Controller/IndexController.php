@@ -48,6 +48,22 @@ class IndexController extends AbstractActionController
 	}
 
 	/**
+	 * Main action.
+	 *
+	 * @return void
+	 * @throws \RuntimeException Whenever is action accessed not via console request.
+	 */
+	public function indexAction()
+	{
+		if (!$this->isConsoleRequest()) {
+			throw new \RuntimeException('You can only use this action from a console!');
+		}
+
+		$console = $this->getConsole();
+		$console->writeLine('TODO ... !', ConsoleColor::LIGHT_RED);
+	}
+
+	/**
 	 * Create storage.
 	 *
 	 * @return void
@@ -55,9 +71,9 @@ class IndexController extends AbstractActionController
 	 */
 	public function storageCreateAction()
 	{
-        if (!$this->isConsoleRequest()) {
-            throw new \RuntimeException('You can only use this action from a console!');
-        }
+		if (!$this->isConsoleRequest()) {
+			throw new \RuntimeException('You can only use this action from a console!');
+		}
 
 		$console = $this->getConsole();
 		$adapter = $this->getServiceLocator()->get('dbAdapter');
@@ -81,9 +97,9 @@ class IndexController extends AbstractActionController
 	 */
 	public function storageClearAction()
 	{
-        if (!$this->isConsoleRequest()) {
-            throw new \RuntimeException('You can only use this action from a console!');
-        }
+		if (!$this->isConsoleRequest()) {
+			throw new \RuntimeException('You can only use this action from a console!');
+		}
 
 		$console = $this->getConsole();
 		$adapter = $this->getServiceLocator()->get('dbAdapter');
@@ -107,9 +123,9 @@ class IndexController extends AbstractActionController
 	 */
 	public function storageDestroyAction()
 	{
-        if (!$this->isConsoleRequest()) {
-            throw new \RuntimeException('You can only use this action from a console!');
-        }
+		if (!$this->isConsoleRequest()) {
+			throw new \RuntimeException('You can only use this action from a console!');
+		}
 
 		$console = $this->getConsole();
 		$adapter = $this->getServiceLocator()->get('dbAdapter');

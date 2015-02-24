@@ -84,6 +84,8 @@ class Module implements AutoloaderProviderInterface,
 	public function getConsoleUsage(Console $console)
 	{
 		return array(
+			'cron' => 'Main command which should be added into the crontab',
+			'Database-related commands',
 			'db create' => 'Create storage for cron-helper',
 			'db clear' => 'Clear all data in cron-helper storage',
 			'db destroy' => 'Destroy cron-helper storage'

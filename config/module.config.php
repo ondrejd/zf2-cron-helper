@@ -16,6 +16,15 @@ return array(
 	'console' => array(
 		'router' => array(
 			'routes' => array(
+				'cronhelper_cron' => array(
+					'options' => array(
+						'route' => 'cron',
+						'defaults' => array(
+							'controller' => 'CronHelper\Controller\Index',
+							'action' => 'index',
+						),
+					),
+				),
 				'cronhelper_storage_create' => array(
 					'options' => array(
 						'route' => 'db create',
