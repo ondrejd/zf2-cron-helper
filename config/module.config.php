@@ -25,6 +25,15 @@ return array(
 						),
 					),
 				),
+				'cronhelper_info' => array(
+					'options' => array(
+						'route' => '[info|status]',
+						'defaults' => array(
+							'controller' => 'CronHelper\Controller\Index',
+							'action' => 'info',
+						),
+					),
+				),
 				'cronhelper_storage_create' => array(
 					'options' => array(
 						'route' => 'db create',

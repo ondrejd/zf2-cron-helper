@@ -30,6 +30,24 @@ class IndexControllerTest extends AbstractConsoleControllerTestCase
 		$this->assertMatchedRouteName('cronhelper_cron');
 	}
 
+	public function testInfoActionCanBeAccessed()
+	{
+		$this->dispatch('info');
+		$this->assertResponseStatusCode(0);
+		$this->assertControllerName('CronHelper\Controller\Index');
+		$this->assertControllerClass('IndexController');
+		$this->assertMatchedRouteName('cronhelper_info');
+	}
+
+	public function testStatusActionCanBeAccessed()
+	{
+		$this->dispatch('status');
+		$this->assertResponseStatusCode(0);
+		$this->assertControllerName('CronHelper\Controller\Index');
+		$this->assertControllerClass('IndexController');
+		$this->assertMatchedRouteName('cronhelper_info');
+	}
+
 	public function testStorageCreateActionCanBeAccessed()
 	{
 		$this->dispatch('db create');

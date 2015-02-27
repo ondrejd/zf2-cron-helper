@@ -75,19 +75,42 @@ class JobMapperTest extends PHPUnit_Framework_TestCase
 		$this->assertSame(0, $resultSet4->count());
 
 		// 3) Insert new job
-		$job = new JobEntity($this->testData);
-		$this->assertInstanceOf('CronHelper\Model\JobEntity', $job);
-		$newJob = $mapper->save($job);
-		$this->assertNotSame(null, $newJob->getId());
+		$job1 = new JobEntity($this->testData);
+		$this->assertInstanceOf('CronHelper\Model\JobEntity', $job1);
+		$job1 = $mapper->save($job1);
+		$this->assertNotSame(null, $job1->getId());
+		$this->assertGreaterThan(0, $job1->getId());
 
 		// 4) Now we should have table with one row
 		$resultSet5 = $mapper->fetchByWhere();
 		$this->assertInstanceOf('Zend\Db\ResultSet\HydratingResultSet', $resultSet5);
 		$this->assertSame(1, $resultSet5->count());
+		$job2 = $resultSet5->current();
+		$this->assertInstanceOf('CronHelper\Model\JobEntity', $job2);
+		$this->assertSame($job1->getId(), $job2->getId());
+		$this->assertSame($job1->getCode(), $job2->getCode());
+		$this->assertSame($job1->getStatus(), $job2->getStatus());
+		$this->assertSame($job1->getErrorMsg(), $job2->getErrorMsg());
+		$this->assertSame($job1->getStackTrace(), $job2->getStackTrace());
+		$this->assertSame($job1->getCreated(), $job2->getCreated());
+		$this->assertSame($job1->getScheduled(), $job2->getScheduled());
+		$this->assertSame($job1->getExecuted(), $job2->getExecuted());
+		$this->assertSame($job1->getFinished(), $job2->getFinished());
 
 		$resultSet6 = $mapper->getPending();
 		$this->assertInstanceOf('Zend\Db\ResultSet\HydratingResultSet', $resultSet6);
 		$this->assertSame(1, $resultSet6->count());
+		$job3 = $resultSet5->current();
+		$this->assertInstanceOf('CronHelper\Model\JobEntity', $job3);
+		$this->assertSame($job1->getId(), $job3->getId());
+		$this->assertSame($job1->getCode(), $job3->getCode());
+		$this->assertSame($job1->getStatus(), $job3->getStatus());
+		$this->assertSame($job1->getErrorMsg(), $job3->getErrorMsg());
+		$this->assertSame($job1->getStackTrace(), $job3->getStackTrace());
+		$this->assertSame($job1->getCreated(), $job3->getCreated());
+		$this->assertSame($job1->getScheduled(), $job3->getScheduled());
+		$this->assertSame($job1->getExecuted(), $job3->getExecuted());
+		$this->assertSame($job1->getFinished(), $job3->getFinished());
 
 		$resultSet7 = $mapper->getRunning();
 		$this->assertInstanceOf('Zend\Db\ResultSet\HydratingResultSet', $resultSet7);

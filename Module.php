@@ -37,6 +37,11 @@ class Module implements AutoloaderProviderInterface,
 	const BASE_PATH = __DIR__;
 
 	/**
+	 * @var string
+	 */
+	const CONSOLE_BANNER = 'ondrejd/zf2-cron-helper 0.1';
+
+	/**
 	 * Retrieve autoloader configuration for this module
 	 *
 	 * @return array
@@ -73,7 +78,7 @@ class Module implements AutoloaderProviderInterface,
 	 */
 	public function getConsoleBanner(Console $console)
 	{
-		return 'ondrejd/zf2-cron-helper 0.1';
+		return self::CONSOLE_BANNER;
 	}
 
 	/**
@@ -84,7 +89,9 @@ class Module implements AutoloaderProviderInterface,
 	public function getConsoleUsage(Console $console)
 	{
 		return array(
+			'Main commands',
 			'cron' => 'Main command which should be added into the crontab',
+			'[info|status]' => 'Print info about current CronHelper status',
 			'Database-related commands',
 			'db create' => 'Create storage for cron-helper',
 			'db clear' => 'Clear all data in cron-helper storage',

@@ -56,17 +56,17 @@ class JobTable implements JobTableInterface
 		$adapter = $this->dbAdapter;
 
 		$ddl = new Ddl\CreateTable();
-		$ddl->setTable(self::TABLE_NAME);
-		$ddl->addColumn(new Column\Integer('id'));
-		$ddl->addColumn(new Column\Varchar('code', 55));
-		$ddl->addColumn(new Column\Varchar('status', 55));
-		$ddl->addColumn(new Column\Text('error_msg'));
-		$ddl->addColumn(new Column\Text('stack_trace'));
-		$ddl->addColumn(new Column\Varchar('created', 256));
-		$ddl->addColumn(new Column\Varchar('scheduled', 256));
-		$ddl->addColumn(new Column\Varchar('executed', 256));
-		$ddl->addColumn(new Column\Varchar('finished', 256));
-		$ddl->addConstraint(new Constraint\PrimaryKey('id'));
+		$ddl->setTable(self::TABLE_NAME)
+			->addColumn(new Column\Integer('id', false, null, array('autoincrement' => true)))
+			->addColumn(new Column\Varchar('code', 55))
+			->addColumn(new Column\Varchar('status', 55))
+			->addColumn(new Column\Text('error_msg'))
+			->addColumn(new Column\Text('stack_trace'))
+			->addColumn(new Column\Varchar('created', 255))
+			->addColumn(new Column\Varchar('scheduled', 255))
+			->addColumn(new Column\Varchar('executed', 255))
+			->addColumn(new Column\Varchar('finished', 255))
+			->addConstraint(new Constraint\PrimaryKey('id'));
 
 		$sql = (new Sql($adapter))->getSqlStringForSqlObject($ddl);
 

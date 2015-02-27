@@ -52,6 +52,27 @@ class IndexController extends AbstractActionController
 	}
 
 	/**
+	 * return JobMapper
+	 */
+	protected function getJobMapper()
+	{
+		$dbAdapter = $this->getServiceLocator()->get('dbAdapter');
+		$mapper = new JobMapper($dbAdapter);
+
+		return $mapper;
+	}
+
+	/**
+	 * @param Console $console
+	 * @return string
+	 */
+	private function printConsoleBanner($console)
+	{
+		$console->writeLine(\CronHelper\Module::CONSOLE_BANNER, ConsoleColor::BLUE);
+		$console->writeLine();
+	}
+
+	/**
 	 * Main action.
 	 *
 	 * @return void
@@ -64,7 +85,45 @@ class IndexController extends AbstractActionController
 		}
 
 		$console = $this->getConsole();
-		$console->writeLine('TODO ... !', ConsoleColor::LIGHT_RED);
+		$this->printConsoleBanner($console);
+
+		$console->writeLine('TODO Finish indexAction!', ConsoleColor::LIGHT_RED);
+	}
+
+	/**
+	 * Print info about current status.
+	 *
+	 * @return void
+	 * @throws \RuntimeException Whenever is action accessed not via console request.
+	 */
+	public function infoAction()
+	{
+		if (!$this->isConsoleRequest()) {
+			throw new \RuntimeException('You can only use this action from a console!');
+		}
+
+		$console = $this->getConsole();
+		$this->printConsoleBanner($console);
+
+		$mapper = $this->getJobMapper();
+
+		try {
+			$pendingJobs = $mapper->getPending()->count();
+			$runningJobs = $mapper->getRunning()->count();
+			$finishedJobs = $mapper->getHistory()->count();
+
+			$console->writeLine(sprintf('Pending jobs: %s', $pendingJobs));
+			$console->writeLine(sprintf('Running jobs: %s', $runningJobs));
+			$console->writeLine(sprintf('Finished jobs: %s', $finishedJobs));
+		} catch (\PDOException $exception) {
+			// Note: It's look like that either database adapter is not properly
+			// defined or table database doesn't exist.
+			$console->writeLine(
+				'Something is bad with your database - either database ' .
+				'adapter is not properly configured or database table is ' .
+				'not created.', ConsoleColor::LIGHT_RED
+			);
+		}
 	}
 
 	/**
@@ -80,6 +139,8 @@ class IndexController extends AbstractActionController
 		}
 
 		$console = $this->getConsole();
+		$this->printConsoleBanner($console);
+
 		$adapter = $this->getServiceLocator()->get('dbAdapter');
 
 		try {
@@ -106,6 +167,8 @@ class IndexController extends AbstractActionController
 		}
 
 		$console = $this->getConsole();
+		$this->printConsoleBanner($console);
+
 		$adapter = $this->getServiceLocator()->get('dbAdapter');
 
 		try {
@@ -132,6 +195,8 @@ class IndexController extends AbstractActionController
 		}
 
 		$console = $this->getConsole();
+		$this->printConsoleBanner($console);
+
 		$adapter = $this->getServiceLocator()->get('dbAdapter');
 
 		try {

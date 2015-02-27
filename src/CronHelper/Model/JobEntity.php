@@ -138,7 +138,7 @@ class JobEntity
 	 */
 	public function setId($val)
 	{
-		$this->id = is_int($val) ? (int) $val : null;
+		$this->id = is_numeric($val) ? (int) $val : null;
 		return $this;
 	}
 
