@@ -16,11 +16,13 @@ use Zend\Db\Sql\Ddl\Constraint;
 use Zend\Db\Sql\Sql;
 
 /**
+ * Class for creating/dropping/truncating job table.
+ *
  * @package CronHelper
  * @subpackage Model
- * @author ondrejd
+ * @author Ondřej Doněk <ondrejd@gmail.com>
  */
-class JobTable
+class JobTable implements JobTableInterface
 {
 	/**
 	 * @var string

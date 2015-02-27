@@ -13,6 +13,10 @@ use Zend\Console\ColorInterface as ConsoleColor;
 use Zend\Console\Request as ConsoleRequest;
 use Zend\Mvc\Controller\AbstractActionController;
 
+use CronHelper\Model\JobEntity;
+use CronHelper\Model\JobMapper;
+use CronHelper\Model\JobTable;
+
 /**
  * Main CronHelper controller.
  *
@@ -79,7 +83,7 @@ class IndexController extends AbstractActionController
 		$adapter = $this->getServiceLocator()->get('dbAdapter');
 
 		try {
-			$table = new \CronHelper\Model\JobTable($adapter);
+			$table = new JobTable($adapter);
 			$table->create();
 		} catch (\Exception $exception) {
 			$console->writeLine('Creating database table failed!', ConsoleColor::LIGHT_RED);
@@ -105,7 +109,7 @@ class IndexController extends AbstractActionController
 		$adapter = $this->getServiceLocator()->get('dbAdapter');
 
 		try {
-			$table = new \CronHelper\Model\JobTable($adapter);
+			$table = new JobTable($adapter);
 			$table->truncate();
 		} catch (\Exception $exception) {
 			$console->writeLine('Truncating database table failed!', ConsoleColor::LIGHT_RED);
@@ -131,7 +135,7 @@ class IndexController extends AbstractActionController
 		$adapter = $this->getServiceLocator()->get('dbAdapter');
 
 		try {
-			$table = new \CronHelper\Model\JobTable($adapter);
+			$table = new JobTable($adapter);
 			$table->drop();
 		} catch (\Exception $exception) {
 			$console->writeLine('Dropping database table failed!', ConsoleColor::LIGHT_RED);

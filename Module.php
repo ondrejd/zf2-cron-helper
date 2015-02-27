@@ -99,11 +99,18 @@ class Module implements AutoloaderProviderInterface,
 	 */
 	public function getServiceConfig()
 	{
+		// TODO If application has own database adapter use it!
+		//if ($sm->has('dbAdapter')) {
+		//	return $sm->get('dbAdapter');
+		//}
 		return array(
 			'factories' => array(
-				'Zend\Db\Adapter\Adapter' => 'Zend\Db\Adapter\AdapterServiceFactory',
 				'dbAdapter' => function ($sm) {
 					$config = $sm->get('config');
+
+					if (!is_array($config)) {
+						throw new \RuntimeException('Module "cron_helper" is missing a proper configuration!');
+					}
 
 					if (!array_key_exists('cron_helper', $config)) {
 						throw new \RuntimeException('Module "cron_helper" is missing a proper configuration!');

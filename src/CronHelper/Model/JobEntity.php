@@ -21,12 +21,17 @@ class JobEntity
 	/**
 	 * @var string
 	 */
-	const STATUS_SUCCESS = 'success';
+	const STATUS_PENDING = 'pending';
 
 	/**
 	 * @var string
 	 */
-	const STATUS_RUNNING = 'success';
+	const STATUS_RUNNING = 'running';
+
+	/**
+	 * @var string
+	 */
+	const STATUS_SUCCESS = 'success';
 
 	/**
 	 * @var string
@@ -173,8 +178,9 @@ class JobEntity
 		$status = is_string($val) ? $val : null;
 
 		switch ($status) {
-			case self::STATUS_SUCCESS:
+			case self::STATUS_PENDING:
 			case self::STATUS_RUNNING:
+			case self::STATUS_SUCCESS:
 			case self::STATUS_MISSED:
 			case self::STATUS_ERROR:
 			case null:

@@ -14,7 +14,7 @@ use CronHelper\Model\JobEntity;
 
 class JobEntityTest extends PHPUnit_Framework_TestCase
 {
-	private $data = array(
+	private $testData = array(
 		'id' => 1,
 		'code' => 'foo',
 		'status' => JobEntity::STATUS_SUCCESS,
@@ -44,23 +44,23 @@ class JobEntityTest extends PHPUnit_Framework_TestCase
 
 	public function testConstructWithValues()
 	{
-		$entity = new JobEntity($this->data);
-		$this->assertSame($this->data['id'], $entity->getId(), '"id" was not set correctly');
-		$this->assertSame($this->data['code'], $entity->getCode(), '"code" was not set correctly');
-		$this->assertSame($this->data['status'], $entity->getStatus(), '"status" was not set correctly');
-		$this->assertSame($this->data['error_msg'], $entity->getErrorMsg(), '"error_msg" was not set correctly');
-		$this->assertSame($this->data['stack_trace'], $entity->getStackTrace(), '"stack_trace" was not set correctly');
-		$this->assertSame($this->data['created'], $entity->getCreated(), '"created" was not set correctly');
-		$this->assertSame($this->data['scheduled'], $entity->getScheduled(), '"scheduled" was not set correctly');
-		$this->assertSame($this->data['executed'], $entity->getExecuted(), '"executed" was not set correctly');
-		$this->assertSame($this->data['finished'], $entity->getFinished(), '"finished" was not set correctly');
+		$entity = new JobEntity($this->testData);
+		$this->assertSame($this->testData['id'], $entity->getId(), '"id" was not set correctly');
+		$this->assertSame($this->testData['code'], $entity->getCode(), '"code" was not set correctly');
+		$this->assertSame($this->testData['status'], $entity->getStatus(), '"status" was not set correctly');
+		$this->assertSame($this->testData['error_msg'], $entity->getErrorMsg(), '"error_msg" was not set correctly');
+		$this->assertSame($this->testData['stack_trace'], $entity->getStackTrace(), '"stack_trace" was not set correctly');
+		$this->assertSame($this->testData['created'], $entity->getCreated(), '"created" was not set correctly');
+		$this->assertSame($this->testData['scheduled'], $entity->getScheduled(), '"scheduled" was not set correctly');
+		$this->assertSame($this->testData['executed'], $entity->getExecuted(), '"executed" was not set correctly');
+		$this->assertSame($this->testData['finished'], $entity->getFinished(), '"finished" was not set correctly');
 		$this->assertSame($entity->getDuration(), 28, 'duration should be 28 ms');
 	}
 
 	public function testExchangeArrayWithNulls()
 	{
 		$entity = new JobEntity();
-		$entity->exchangeArray($this->data);
+		$entity->exchangeArray($this->testData);
 		$entity->exchangeArray(array());
 		$this->assertNull($entity->getId(), '"id" should be null');
 		$this->assertNull($entity->getCode(), '"code" should be null');
@@ -77,16 +77,16 @@ class JobEntityTest extends PHPUnit_Framework_TestCase
 	public function testExchangeArrayWithValues()
 	{
 		$entity = new JobEntity();
-		$entity->exchangeArray($this->data);
-		$this->assertSame($this->data['id'], $entity->getId(), '"id" was not set correctly');
-		$this->assertSame($this->data['code'], $entity->getCode(), '"code" was not set correctly');
-		$this->assertSame($this->data['status'], $entity->getStatus(), '"status" was not set correctly');
-		$this->assertSame($this->data['error_msg'], $entity->getErrorMsg(), '"error_msg" was not set correctly');
-		$this->assertSame($this->data['stack_trace'], $entity->getStackTrace(), '"stack_trace" was not set correctly');
-		$this->assertSame($this->data['created'], $entity->getCreated(), '"created" was not set correctly');
-		$this->assertSame($this->data['scheduled'], $entity->getScheduled(), '"scheduled" was not set correctly');
-		$this->assertSame($this->data['executed'], $entity->getExecuted(), '"executed" was not set correctly');
-		$this->assertSame($this->data['finished'], $entity->getFinished(), '"finished" was not set correctly');
+		$entity->exchangeArray($this->testData);
+		$this->assertSame($this->testData['id'], $entity->getId(), '"id" was not set correctly');
+		$this->assertSame($this->testData['code'], $entity->getCode(), '"code" was not set correctly');
+		$this->assertSame($this->testData['status'], $entity->getStatus(), '"status" was not set correctly');
+		$this->assertSame($this->testData['error_msg'], $entity->getErrorMsg(), '"error_msg" was not set correctly');
+		$this->assertSame($this->testData['stack_trace'], $entity->getStackTrace(), '"stack_trace" was not set correctly');
+		$this->assertSame($this->testData['created'], $entity->getCreated(), '"created" was not set correctly');
+		$this->assertSame($this->testData['scheduled'], $entity->getScheduled(), '"scheduled" was not set correctly');
+		$this->assertSame($this->testData['executed'], $entity->getExecuted(), '"executed" was not set correctly');
+		$this->assertSame($this->testData['finished'], $entity->getFinished(), '"finished" was not set correctly');
 		$this->assertSame($entity->getDuration(), 28, 'duration should be 28 ms');
 	}
 
@@ -107,17 +107,17 @@ class JobEntityTest extends PHPUnit_Framework_TestCase
 
 	public function testGetArrayCopyWithValues()
 	{
-		$entity = new JobEntity($this->data);
+		$entity = new JobEntity($this->testData);
 		$copy = $entity->getArrayCopy();
-		$this->assertSame($this->data['id'], $copy['id'], '"id" was not set correctly');
-		$this->assertSame($this->data['code'], $copy['code'], '"code" was not set correctly');
-		$this->assertSame($this->data['status'], $copy['status'], '"status" was not set correctly');
-		$this->assertSame($this->data['error_msg'], $copy['error_msg'], '"error_msg" was not set correctly');
-		$this->assertSame($this->data['stack_trace'], $copy['stack_trace'], '"stack_trace" was not set correctly');
-		$this->assertSame($this->data['created'], $copy['created'], '"created" was not set correctly');
-		$this->assertSame($this->data['scheduled'], $copy['scheduled'], '"scheduled" was not set correctly');
-		$this->assertSame($this->data['executed'], $copy['executed'], '"executed" was not set correctly');
-		$this->assertSame($this->data['finished'], $copy['finished'], '"finished" was not set correctly');
+		$this->assertSame($this->testData['id'], $copy['id'], '"id" was not set correctly');
+		$this->assertSame($this->testData['code'], $copy['code'], '"code" was not set correctly');
+		$this->assertSame($this->testData['status'], $copy['status'], '"status" was not set correctly');
+		$this->assertSame($this->testData['error_msg'], $copy['error_msg'], '"error_msg" was not set correctly');
+		$this->assertSame($this->testData['stack_trace'], $copy['stack_trace'], '"stack_trace" was not set correctly');
+		$this->assertSame($this->testData['created'], $copy['created'], '"created" was not set correctly');
+		$this->assertSame($this->testData['scheduled'], $copy['scheduled'], '"scheduled" was not set correctly');
+		$this->assertSame($this->testData['executed'], $copy['executed'], '"executed" was not set correctly');
+		$this->assertSame($this->testData['finished'], $copy['finished'], '"finished" was not set correctly');
 	}
 
 	public function testBadStatus()

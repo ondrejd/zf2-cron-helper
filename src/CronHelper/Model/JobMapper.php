@@ -10,7 +10,7 @@
 namespace CronHelper\Model;
 
 use Zend\Db\Adapter\AdapterInterface;
-use Zend\Db\Adapter\Driver\ResultInterface;
+use Zend\Db\Adapter\Driver\Pdo\Result;
 use Zend\Db\ResultSet\HydratingResultSet;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Where;
@@ -23,7 +23,7 @@ use Zend\Stdlib\Hydrator\ClassMethods;
  * @subpackage Model
  * @author Ondřej Doněk <ondrejd@gmail.com>
  */
-class JobMapper
+class JobMapper implements JobMapperInterface
 {
 	/**
 	 * @var string $tableName
@@ -65,67 +65,107 @@ class JobMapper
 	}
 
 	/**
-	 * Fetch all jobs.
-	 *
+	 * @param Result $result
 	 * @return HydratingResultSet
 	 */
-	public function fetchAll()
+	private function hydrateResult(Result $result)
 	{
-		return $this->fetchByWhere(new Where, false);
-	}
-
-	/**
-	 * Fetch one job by where clause.
-	 *
-	 * If `$trimResultSetIfOneRow` is TRUE then if resulting resultset
-	 * has just one row the `JobEntity` is returned instead.
-	 *
-	 * If `$trimResultSetIfOneRow` is TRUE and count of results is zero
-	 * than NULL is returned.
-	 *
-	 * @param Where $where
-	 * @param boolean $trimResultSetIfOneRow (Optional, default TRUE).
-	 * @return HydratingResultSet|JobEntity|null
-	 */
-	public function fetchByWhere(Where $where, $trimResultSetIfOneRow = true)
-	{
-		$query = $this->sql->select();
-		$query->where($where);
-
 		$entity = new JobEntity();
 		$hydrator = new ClassMethods();
 		$resultSet = new HydratingResultSet($hydrator, $entity);
-
-		$stmt = $this->sql->prepareStatementForSqlObject($query);
-
-		$results = $stmt->execute();
-		$resultSet->initialize($results);
-
-		if ($resultSet->count() == 0 && $trimResultSetIfOneRow === true) {
-			return null;
-		}
-		elseif ($resultSet->count() == 1 && $trimResultSetIfOneRow === true) {
-			return $resultSet->current();
-		}
-		else {
-			$resultSet->buffer();
-		}
+		$resultSet->initialize($result);
+		$resultSet->buffer();
 
 		return $resultSet;
 	}
 
 	/**
-	 * Fetch one job by its id.
+	 * Find jobs.
 	 *
-	 * @param integer $id
-	 * @return JobEntity|null
+	 * @param Where|string|null $where
+	 * @param array $options (Optional.)
+	 * @return Result|HydratingResultSet
 	 */
-	public function fetchOneById($id)
+	public function fetchByWhere($where = null, array $options = array())
 	{
-		$where = new Where();
-		$where->equalTo('id', $id);
+		$select = $this->sql->select();
 
-		return $this->fetchByWhere($where, true);
+		if ($where instanceof Where) {
+			$select->where($where);
+		} elseif (is_string($where) && !empty($where)) {
+			$select->where($where);
+		}
+
+		// Options: limit
+		$limit = array_key_exists('limit', $options) ? (int) $limit : null;
+
+		if (!is_null($limit) && (int) $limit > 0) {
+			$select->limit($limit);
+		}
+
+		$stmt = $this->sql->prepareStatementForSqlObject($select);
+		$result = $stmt->execute();
+
+		// Option: hydrate
+		$hydrate = array_key_exists('hydrate', $options) ? (bool) $options['hydrate'] : true;
+
+		if ($hydrate !== true) {
+			return $result;
+		}
+
+		return $this->hydrateResult($result);
+	}
+
+	/**
+	 * Find jobs(s) by its/their ID(s).
+	 *
+	 * @param integer|array $id
+	 * @param array $options (Optional.)
+	 * @return Result|HydratingResultSet|JobEntity|null
+	 */
+	public function fetchById($id, array $options = array())
+	{
+		$select = $this->sql->select();
+		$where = new Where();
+
+		if (is_array($id)) {
+			if (count($id) == 0) {
+				return null;
+			}
+			$where->in('id', $id);
+		} else {
+			$where->equalTo('id', $id);
+		}
+
+		$select->where($where);
+
+		$stmt = $this->sql->prepareStatementForSqlObject($select);
+		$result = $stmt->execute();
+
+		// Options: hydrate
+		$hydrate = array_key_exists('hydrate', $options) ? (bool) $options['hydrate'] : true;
+
+		if (is_array($id)) {
+			if ($hydrate !== true) {
+				return $result;
+			}
+
+			return $this->hydrateResult($result);
+		}
+
+		if ($result->count() == 0) {
+			return null;
+		}
+
+		if ($hydrate !== true) {
+			return $result->current();
+		}
+
+		$hydrator = new ClassMethods();
+		$entity = new JobEntity();
+		$hydrator->hydrate($result->current(), $entity);
+
+		return $entity;
 	}
 
 	/**
@@ -141,59 +181,117 @@ class JobMapper
 		if ((int) $job->getId() == 0) {
 			$query = $this->sql->insert();
 			$query->values($job->getArrayCopy());
-		}
-		else {
+		} else {
 			$query = $this->sql->update();
 			$query->set($job->getArrayCopy());
 			$query->where(array('id' => $job->getId()));
 		}
 
 		$stmt = $this->sql->prepareStatementForSqlObject($query);
-		$stmt->execute();
+		$res = $stmt->execute();
 
 		if ((int) $job->getId() == 0) {
-			$id = $this->dbAdapter->getDriver()->getLastGeneratedValue();
-			// Note: When PostgreSQL is used then ID is:
-			//$id = $this->dbAdapter->getDriver()->getLastGeneratedValue($this->getTableName() . '_seq');
-			$job->setId($id);
+			$job->setId((int) $res->getGeneratedValue());
 		}
 
 		return $job;
 	}
 
 	/**
-	 * Delete job by its ID.
+	 * Delete jobs.
 	 *
-	 * @param integer|JobEntity $job
-	 * @return ResultInterface
+	 * @param Where|string|null $where
+	 * @param array $options (Optional.)
+	 * @return Result
 	 */
-	public function delete($job)
+	public function deleteByWhere($where = null, array $options = array())
 	{
-		$jobId = ($job instanceof JobEntity) ? $job->getId() : $job;
-		$where = new Where();
-		$where->equalTo('id', $jobId);
+		$delete = $this->sql->delete();
 
-		return $this->deleteByWhere($where, 1);
+		if ($where instanceof Where) {
+			$delete->where($where);
+		} elseif (is_string($where) && !empty($where)) {
+			$delete->where($where);
+		}
+
+		$delete->where($where);
+
+		// Options: limit
+		$limit = array_key_exists('limit', $options) ? (int) $limit : null;
+
+		if (!is_null($limit) && (int) $limit > 0) {
+			$delete->limit($limit);
+		}
+
+		$stmt = $this->sql->prepareStatementForSqlObject($delete);
+
+		return $stmt->execute();
 	}
 
 	/**
-	 * Delete job or jobs.
+	 * Delete jobs(s) by its/their ID(s).
 	 *
-	 * @param Where $where
-	 * @param integer|null $limit (Optional.)
-	 * @return ResultInterface
+	 * @param integer|array $id
+	 * @return Result|HydratingResultSet|JobEntity|null
 	 */
-	public function deleteByWhere(Where $where, $limit = null)
+	public function deleteById($id)
 	{
-		$query = $this->sql->delete();
-		$query->where($where);
+		$where = new Where();
 
-		if (!is_null($limit) && (int) $limit > 0) {
-			$query->limit($limit);
+		if (is_array($id)) {
+			if (count($id) == 0) {
+				return null;
+			}
+			$where->in('id', $id);
+		} else {
+			$where->equalTo('id', $id);
 		}
 
-		$stmt = $this->sql->prepareStatementForSqlObject($query);
+		return $this->fetchByWhere($where);
+	}
 
-		return $stmt->execute();
+    /**
+     * Get pending cron jobs.
+     *
+	 * @param array $options (Optional.)
+     * @return HydratingResultSet
+     */
+    public function getPending(array $options = array())
+	{
+		$where = new Where();
+		$where->equalTo("{$this->tableName}.status", JobEntity::STATUS_PENDING);
+
+		return $this->fetchByWhere($where, $options);
+	}
+
+    /**
+     * Get running cron jobs.
+     *
+	 * @param array $options (Optional.)
+     * @return HydratingResultSet
+     */
+    public function getRunning(array $options = array())
+	{
+		$where = new Where();
+		$where->equalTo("{$this->tableName}.status", JobEntity::STATUS_RUNNING);
+
+		return $this->fetchByWhere($where, $options);
+	}
+
+    /**
+     * Get completed cron jobs (not pending or runnig).
+     *
+	 * @param array $options (Optional.)
+	 * @return HydratingResultSet
+     */
+    public function getHistory(array $options = array())
+	{
+		$where = new Where();
+		$where->notIn(
+			"{$this->tableName}.status",
+			array(JobEntity::STATUS_PENDING, JobEntity::STATUS_RUNNING)
+		);
+
+		return $this->fetchByWhere($where, $options);
 	}
 }
