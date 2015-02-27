@@ -181,3 +181,5 @@ Test code-coverage reports can be found in folder `test/log/report`.
 ```sh
 phpdoc run -d "src" -t "docs/generated" --title "CronHelper Module" --defaultpackagename "CronHelper" -q
 ```
+
+
