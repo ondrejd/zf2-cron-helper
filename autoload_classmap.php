@@ -10,6 +10,9 @@
 return array(
 	'CronHelper\Controller\IndexController' => __DIR__ . '/src/CronHelper/Controller/IndexController.php',
 	'CronHelper\Model\JobEntity' => __DIR__ . '/src/CronHelper/Model/JobEntity.php',
+	'CronHelper\Model\JobMapperInterface' => __DIR__ . '/src/CronHelper/Model/JobMapperInterface.php',
 	'CronHelper\Model\JobMapper' => __DIR__ . '/src/CronHelper/Model/JobMapper.php',
+	'CronHelper\Model\JobTableInterface' => __DIR__ . '/src/CronHelper/Model/JobTableInterface.php',
 	'CronHelper\Model\JobTable' => __DIR__ . '/src/CronHelper/Model/JobTable.php',
+	'CronHelper\Service\CronServiceInterface' => __DIR__ . '/src/CronHelper/Service/CronServiceInterface.php',
 );
