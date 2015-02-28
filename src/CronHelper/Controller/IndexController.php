@@ -11,6 +11,7 @@ namespace CronHelper\Controller;
 
 use Zend\Console\ColorInterface as ConsoleColor;
 use Zend\Console\Request as ConsoleRequest;
+use Zend\Db\Adapter\Adapter as DbAdapter;
 use Zend\Mvc\Controller\AbstractActionController;
 
 use CronHelper\Model\JobEntity;
@@ -30,6 +31,11 @@ class IndexController extends AbstractActionController
 	 * @var \Zend\Console\Adapter\AdapterInterface $console
 	 */
 	private $console;
+
+	/**
+	 * @var DbAdapter $dbAdapter
+	 */
+	private $dbAdapter;
 
 	/**
 	 * @return \Zend\Console\Adapter\AdapterInterface
@@ -52,11 +58,42 @@ class IndexController extends AbstractActionController
 	}
 
 	/**
+	 * @return DbAdapter
+	 */
+	protected function getDbAdapter()
+	{
+		$serviceLocator = $this->getServiceLocator();
+
+		if ($serviceLocator->has('Zend\Db\Adapter\Adapter')) {
+			$this->dbAdapter = $serviceLocator->get('Zend\Db\Adapter\Adapter');
+		} else {
+			$config = $serviceLocator->get('config');
+
+			if (array_key_exists('cron_helper', $config)) {
+				$config = $config['cron_helper'];
+
+				if (array_key_exists('db', $config)) {
+					$this->dbAdapter = new DbAdapter($config['db']);
+				}
+			}
+		}
+
+		if (!($this->dbAdapter instanceof DbAdapter)) {
+			throw new \RuntimeException(
+				'Module "cron_helper" has no database adapter. Probably is ' .
+				'missing a proper configuration!'
+			);
+		}
+
+		return $this->dbAdapter;
+	}
+
+	/**
 	 * return JobMapper
 	 */
 	protected function getJobMapper()
 	{
-		$dbAdapter = $this->getServiceLocator()->get('dbAdapter');
+		$dbAdapter = $this->getDbAdapter();
 		$mapper = new JobMapper($dbAdapter);
 
 		return $mapper;
@@ -138,13 +175,12 @@ class IndexController extends AbstractActionController
 			throw new \RuntimeException('You can only use this action from a console!');
 		}
 
+		$dbAdapter = $this->getDbAdapter();
 		$console = $this->getConsole();
 		$this->printConsoleBanner($console);
 
-		$adapter = $this->getServiceLocator()->get('dbAdapter');
-
 		try {
-			$table = new JobTable($adapter);
+			$table = new JobTable($dbAdapter);
 			$table->create();
 		} catch (\Exception $exception) {
 			$console->writeLine('Creating database table failed!', ConsoleColor::LIGHT_RED);
@@ -166,13 +202,12 @@ class IndexController extends AbstractActionController
 			throw new \RuntimeException('You can only use this action from a console!');
 		}
 
+		$dbAdapter = $this->getDbAdapter();
 		$console = $this->getConsole();
 		$this->printConsoleBanner($console);
 
-		$adapter = $this->getServiceLocator()->get('dbAdapter');
-
 		try {
-			$table = new JobTable($adapter);
+			$table = new JobTable($dbAdapter);
 			$table->truncate();
 		} catch (\Exception $exception) {
 			$console->writeLine('Truncating database table failed!', ConsoleColor::LIGHT_RED);
@@ -194,13 +229,12 @@ class IndexController extends AbstractActionController
 			throw new \RuntimeException('You can only use this action from a console!');
 		}
 
+		$dbAdapter = $this->getDbAdapter();
 		$console = $this->getConsole();
 		$this->printConsoleBanner($console);
 
-		$adapter = $this->getServiceLocator()->get('dbAdapter');
-
 		try {
-			$table = new JobTable($adapter);
+			$table = new JobTable($dbAdapter);
 			$table->drop();
 		} catch (\Exception $exception) {
 			$console->writeLine('Dropping database table failed!', ConsoleColor::LIGHT_RED);

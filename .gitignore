@@ -1,3 +1,4 @@
+config/cronhelper.config.php
 docs/generated/*
 nbproject/private/
 test/log/report/*

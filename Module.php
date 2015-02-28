@@ -106,33 +106,8 @@ class Module implements AutoloaderProviderInterface,
 	 */
 	public function getServiceConfig()
 	{
-		// TODO If application has own database adapter use it!
-		//if ($sm->has('dbAdapter')) {
-		//	return $sm->get('dbAdapter');
-		//}
 		return array(
-			'factories' => array(
-				'dbAdapter' => function ($sm) {
-					$config = $sm->get('config');
-
-					if (!is_array($config)) {
-						throw new \RuntimeException('Module "cron_helper" is missing a proper configuration!');
-					}
-
-					if (!array_key_exists('cron_helper', $config)) {
-						throw new \RuntimeException('Module "cron_helper" is missing a proper configuration!');
-					}
-
-					$config = $config['cron_helper'];
-
-					if (!array_key_exists('db', $config)) {
-						throw new \RuntimeException('Module "cron_helper" is missing a proper configuration!');
-					}
-
-					$dbAdapter = new DbAdapter($config['db']);
-					return $dbAdapter;
-				},
-			),
+			'factories' => array(),
 		);
 	}
 }
