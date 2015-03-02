@@ -18,7 +18,7 @@ return array(
             'scheduleAhead' => 1440, // one day before
             // Time in minutes for how long it takes before the scheduled job
             // is considered missed.
-            'scheduleLifetime' => 15
+            'scheduleLifetime' => 15,
             // Maximal running time (in minutes) for the each CRON job.
             // If `0` is set than the set (in `php.ini`) `max_execution_time` is used.
             'maxRunningTime' => 0,

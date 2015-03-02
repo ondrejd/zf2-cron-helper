@@ -16,6 +16,8 @@ use Zend\ModuleManager\Feature\ConfigProviderInterface;
 use Zend\ModuleManager\Feature\ServiceProviderInterface;
 use Zend\ModuleManager\Feature\ConsoleBannerProviderInterface;
 use Zend\ModuleManager\Feature\ConsoleUsageProviderInterface;
+use Zend\Mvc\MvcEvent;
+use CronHelper\Service\CronService;
 
 /**
  * CronHelper module.
@@ -107,7 +109,37 @@ class Module implements AutoloaderProviderInterface,
 	public function getServiceConfig()
 	{
 		return array(
-			'factories' => array(),
+			'factories' => array(
+				'CronHelper\Service\CronService' => function ($serviceManager) {
+					$mainConfig = $serviceManager->get('config');
+					$serviceConfig = array();
+
+					if (is_array($mainConfig)) {
+						if (array_key_exists('cron_helper', $mainConfig)) {
+							$serviceConfig = $mainConfig['cron_helper'];
+						}
+					}
+
+					$cronService = new CronService($serviceConfig);
+					return $cronService;
+				},
+			),
 		);
+	}
+
+	/**
+	 * On bootstrap.
+	 *
+	 * @param MvcEvent $event
+	 * @return void
+	 */
+	public function onBootstrap(MvcEvent $event)
+	{
+		$eventManager = $event->getApplication()->getEventManager();
+		$sharedEventManager = $eventManager->getSharedManager();
+
+		//$sharedEventManager->attach('CronHelper\Service\CronService', function($aEvent) {
+		//	var_dump($aEvent);
+		//}, 100);
 	}
 }

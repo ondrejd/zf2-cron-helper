@@ -24,18 +24,41 @@ namespace CronHelper\Service;
 interface CronServiceInterface
 {
 	/**
+	 * Get default options.
+	 *
+	 * Options array (names of keys correspond with methods of this class
+	 * so look there for detailed description of a single option):
+	 * <ul>
+	 *   <li><code>scheduleAhead</code> <i><u>integer</u></i> time in minutes</li>
+	 *   <li><code>scheduleLifetime</code> <i><u>integer</u></i> time in minutes</li>
+	 *   <li><code>maxRunningTime</code> <i><u>integer</u></i> time in minutes</li>
+	 *   <li><code>successLogLifetime</code> <i><u>integer</u></i> time in minutes</li>
+	 *   <li><code>failureLogLifetime</code> <i><u>integer</u></i> time in minutes</li>
+	 *   <li><code>emitEvents</code> <i><u>boolean</u></i> emit process events?</li>
+	 *   <li><code>allowJsonApi</code> <i><u>boolean</u></i> allow JSON API?</li>
+	 *   <li><code>jsonApiSecurityHash</code> <i><u>string</u></i> security hash for accessing JSON API</li>
+	 * </ul>
+	 *
+	 * @return array
+	 */
+	public function getDefaultOptions();
+
+	/**
 	 * Get options.
 	 *
 	 * @return array
+	 * @see CronService::getDefaultOptions() There is a detailed options array description.
 	 */
 	public function getOptions();
 
 	/**
 	 * Set options.
 	 *
+	 * @param array $options
 	 * @return array
+	 * @see CronService::getDefaultOptions() There is a detailed options array description.
 	 */
-	public function setOptions();
+	public function setOptions(array $options);
 
 	/**
 	 * Get time in minutes for how long ahead CRON jobs have to be scheduled.
@@ -49,6 +72,7 @@ interface CronServiceInterface
 	 *.
 	 * @param integer $time
 	 * @return CronServiceInterface
+	 * @throws \InvalidArgumentException Whenever `$time` is not a numeric value.
 	 */
 	public function setScheduleAhead($time);
 
@@ -66,6 +90,7 @@ interface CronServiceInterface
 	 *
 	 * @param integer $time
 	 * @return CronServiceInterface
+	 * @throws \InvalidArgumentException Whenever `$time` is not a numeric value.
 	 */
 	public function setScheduleLifetime($time);
 
@@ -85,6 +110,7 @@ interface CronServiceInterface
 	 *
 	 * @param integer $time
 	 * @return CronServiceInterface
+	 * @throws \InvalidArgumentException Whenever `$time` is not a numeric value.
 	 */
 	public function setMaxRunningTime($time);
 
@@ -102,6 +128,7 @@ interface CronServiceInterface
 	 *
 	 * @param integer $time
 	 * @return CronServiceInterface
+	 * @throws \InvalidArgumentException Whenever `$time` is not a numeric value.
 	 */
 	public function setSuccessLogLifetime($time);
 
@@ -117,6 +144,7 @@ interface CronServiceInterface
 	 *
 	 * @param integer $time
 	 * @return CronServiceInterface
+	 * @throws \InvalidArgumentException Whenever `$time` is not a numeric value.
 	 */
 	public function setFailureLogLifetime($time);
 
@@ -132,6 +160,7 @@ interface CronServiceInterface
 	 *
 	 * @param boolean $emitEvents
 	 * @return CronServiceInterface
+	 * @throws \InvalidArgumentException Whenever `$emitEvents` is not a boolean value.
 	 */
 	public function setEmitEvents($emitEvents);
 

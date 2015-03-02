@@ -15,4 +15,5 @@ return array(
 	'CronHelper\Model\JobTableInterface' => __DIR__ . '/src/CronHelper/Model/JobTableInterface.php',
 	'CronHelper\Model\JobTable' => __DIR__ . '/src/CronHelper/Model/JobTable.php',
 	'CronHelper\Service\CronServiceInterface' => __DIR__ . '/src/CronHelper/Service/CronServiceInterface.php',
+	'CronHelper\Service\CronService' => __DIR__ . '/src/CronHelper/Service/CronService.php',
 );
