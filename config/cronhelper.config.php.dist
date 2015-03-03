@@ -8,9 +8,39 @@
  */
 
 return array(
+    // Example configuration for the `zf2-cron-helper` module
 	'cron_helper' => array(
-		// CronService options
-		'options' => array(	),
+		// Main options
+		'options' => array(
+            // Time in minutes for how long ahead CRON jobs have to be scheduled.
+            // This means for how long before the scheduled execution time should
+            // be job inserted into the database (e.g. scheduled).
+            'scheduleAhead' => 1440, // one day before
+            // Time in minutes for how long it takes before the scheduled job
+            // is considered missed.
+            'scheduleLifetime' => 15,
+            // Maximal running time (in minutes) for the each CRON job.
+            // If `0` is set than the set (in `php.ini`) `max_execution_time` is used.
+            'maxRunningTime' => 0,
+            // Time in minutes for how long to keep records about successfully
+            // completed CRON jobs.
+            'successLogLifetime' => 1440, // one day
+            // Time in minutes for how long to keep records about failed CRON jobs.
+            'failureLogLifetime' => 2880, // two days
+            // If `TRUE` then events are emited during processing CRON jobs.
+            // This can be useful if you need to perform other actions related
+            // to executed CRON jobs.
+            'emitEvents' => false,
+            // If `TRUE` then you can access info about current status by simple
+            // JSON API.
+            // This can be useful when you want to provide some sort of UI
+            // to watch or manage CRON jobs.
+            'allowJsonApi' => false,
+            // If JSON API is allowed the security hash MUST BE SET to achive
+            // the full functionality. Otherwise will be available only status
+            // informations but all managment functions will be disabled.
+            'jsonApiSecurityHash' => 'YOUR_SECURITY_HASH',
+        ),
 		// Optionaly you can define CronHelper own database adapter.
 		// If you omit to do that adapter will be searched using
 		// ServiceManager by commonly used alias "dbAdapter".
@@ -21,10 +51,7 @@ return array(
 		// Here are defined CRON jobs of our application. Keys of these jobs
 		// can be used for triggering them directly from the application
 		// beside the scheduled timeplan.
-		'jobs' => array(
-		//	'example1' => array(
-		//		// TODO Add example here!
-		//	),
-		),
+        // For more details how to define single CRON jobs see main README.md.
+        'jobs' => array(),
 	),
 );

@@ -17,6 +17,7 @@ use Zend\Mvc\Controller\AbstractActionController;
 use CronHelper\Model\JobEntity;
 use CronHelper\Model\JobMapper;
 use CronHelper\Model\JobTable;
+use CronHelper\Service\CronService;
 
 /**
  * Main CronHelper controller.
@@ -38,6 +39,11 @@ class IndexController extends AbstractActionController
 	private $dbAdapter;
 
 	/**
+	 * @var CronService $cronService
+	 */
+	private $cronService;
+
+	/**
 	 * @return \Zend\Console\Adapter\AdapterInterface
 	 */
 	protected function getConsole()
@@ -47,14 +53,6 @@ class IndexController extends AbstractActionController
 		}
 
 		return $this->console;
-	}
-
-	/**
-	 * @return boolean
-	 */
-	protected function isConsoleRequest()
-	{
-		return 	($this->getRequest() instanceof ConsoleRequest);
 	}
 
 	/**
@@ -89,6 +87,18 @@ class IndexController extends AbstractActionController
 	}
 
 	/**
+	 * @return CronService
+	 */
+	protected function getCronService()
+	{
+		if (!($this->cronService instanceof CronService)) {
+			$this->cronService = $this->getServiceLocator()->get('CronHelper\Service\CronService');
+		}
+
+		return $this->cronService;
+	}
+
+	/**
 	 * return JobMapper
 	 */
 	protected function getJobMapper()
@@ -97,6 +107,14 @@ class IndexController extends AbstractActionController
 		$mapper = new JobMapper($dbAdapter);
 
 		return $mapper;
+	}
+
+	/**
+	 * @return boolean
+	 */
+	protected function isConsoleRequest()
+	{
+		return 	($this->getRequest() instanceof ConsoleRequest);
 	}
 
 	/**

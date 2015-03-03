@@ -1,7 +1,9 @@
 config/cronhelper.config.php
 docs/generated/*
 nbproject/private/
+.komodotools
+zf2-cron-helper.komodoproject
 test/log/report/*
 vendor/
 composer.lock
-build.xml
+cronhelper.sqlite
