@@ -51,6 +51,7 @@ return array(
 		// Here are defined CRON jobs of our application. Keys of these jobs
 		// can be used for triggering them directly from the application
 		// beside the scheduled timeplan.
-        'jobs' => array(/** @todo Add examples here! */),
+        // For more details how to define single CRON jobs see main README.md.
+        'jobs' => array(),
 	),
 );

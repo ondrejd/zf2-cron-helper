@@ -9,6 +9,7 @@
 
 namespace CronHelper\Service;
 
+use Zend\EventManager\EventManager;
 use Zend\EventManager\EventManagerInterface;
 use Zend\EventManager\EventManagerAwareInterface;
 use Zend\ServiceManager\ServiceManager;
@@ -63,15 +64,17 @@ class CronService implements CronServiceInterface, ServiceManagerAwareInterface,
 
     /**
      * @param EventManagerInterface $eventManager
-     * @return void
+     * @return CronService
      */
-    public function getEventManager(EventManagerInterface $eventManager)
+    public function setEventManager(EventManagerInterface $eventManager)
     {
-        $eventManager->addIdentifiers(array(
+        $eventManager->setIdentifiers(array(
+            __CLASS__,
             get_called_class()
         ));
 
         $this->eventManager = $eventManager;
+        return $this;
     }
 
     /**
@@ -88,11 +91,12 @@ class CronService implements CronServiceInterface, ServiceManagerAwareInterface,
      * Set service manager.
      *
      * @param ServiceManager $serviceManager
-     * @return void
+     * @return CronService
      */
     public function setServiceManager(ServiceManager $serviceManager)
     {
         $this->serviceManager = $serviceManager;
+        return $this;
     }
 
     /**
@@ -142,12 +146,17 @@ class CronService implements CronServiceInterface, ServiceManagerAwareInterface,
      * Set options.
      *
      * @param array $options
-     * @return CronServiceInterface
+     * @return CronService
      * @see CronService::getDefaultOptions() There is a detailed options array description.
      */
     public function setOptions(array $options)
     {
-        $this->options = array_merge($this->getDefaultOptions(), $options);
+        if (!array_key_exists('options', $options)) {
+            $options['options'] = array();
+        }
+
+        $this->options = array_merge($this->getDefaultOptions(), $options['options']);
+        return $this;
     }
 
     /**
@@ -164,7 +173,7 @@ class CronService implements CronServiceInterface, ServiceManagerAwareInterface,
      * Set time in minutes for how long ahead CRON jobs have to be scheduled.
      *.
      * @param integer $time
-     * @return CronServiceInterface
+     * @return CronService
      */
     public function setScheduleAhead($time)
     {
@@ -192,7 +201,7 @@ class CronService implements CronServiceInterface, ServiceManagerAwareInterface,
      * is considered missed.
      *
      * @param integer $time
-     * @return CronServiceInterface
+     * @return CronService
      */
     public function setScheduleLifetime($time)
     {
@@ -222,7 +231,7 @@ class CronService implements CronServiceInterface, ServiceManagerAwareInterface,
      * If 0 than no maximal limit is set or the system is used.
      *
      * @param integer $time
-     * @return CronServiceInterface
+     * @return CronService
      */
     public function setMaxRunningTime($time)
     {
@@ -242,7 +251,7 @@ class CronService implements CronServiceInterface, ServiceManagerAwareInterface,
      */
     public function getSuccessLogLifetime()
     {
-        return (int) $this->options['sucessLogLifetime'];
+        return (int) $this->options['successLogLifetime'];
     }
 
     /**
@@ -250,7 +259,7 @@ class CronService implements CronServiceInterface, ServiceManagerAwareInterface,
      * completed CRON jobs.
      *
      * @param integer $time
-     * @return CronServiceInterface
+     * @return CronService
      */
     public function setSuccessLogLifetime($time)
     {
@@ -276,7 +285,7 @@ class CronService implements CronServiceInterface, ServiceManagerAwareInterface,
      * Set time in minutes for how long to keep records about failed CRON jobs.
      *
      * @param integer $time
-     * @return CronServiceInterface
+     * @return CronService
      * @throws \InvalidArgumentException Whenever `$time` is not a numeric value.
      */
     public function setFailureLogLifetime($time)
@@ -303,7 +312,7 @@ class CronService implements CronServiceInterface, ServiceManagerAwareInterface,
      * Set TRUE if events are emitted during job processing.
      *
      * @param boolean $emitEvents
-     * @return CronServiceInterface
+     * @return CronService
      * @throws \InvalidArgumentException Whenever `$emitEvents` is not a boolean value.
      */
     public function setEmitEvents($emitEvents)
@@ -313,6 +322,60 @@ class CronService implements CronServiceInterface, ServiceManagerAwareInterface,
         }
 
         $this->options['emitEvents'] = (bool) $emitEvents;
+        return $this;
+    }
+
+    /**
+     * Get TRUE if JSON API is allowed.
+     *
+     * @return boolean
+     */
+    public function getAllowJsonApi()
+    {
+        return (bool) $this->options['allowJsonApi'];
+    }
+
+    /**
+     * Set TRUE if JSON API is allowed.
+     *
+     * @param boolean $allowJsonApi
+     * @return CronService
+     * @throws \InvalidArgumentException Whenever `$allowJsonApi` is not a boolean value.
+     */
+    public function setAllowJsonApi($allowJsonApi)
+    {
+        if (!is_bool($allowJsonApi)) {
+            throw new \InvalidArgumentException('`allowJsonApi` expects boolean value!');
+        }
+
+        $this->options['allowJsonApi'] = (bool) $allowJsonApi;
+        return $this;
+    }
+
+    /**
+     * Get JSON API security hash.
+     *
+     * @return string
+     */
+    public function getJsonApiSecurityHash()
+    {
+        return $this->options['jsonApiSecurityHash'];
+    }
+
+    /**
+     * Set JSON API security hash.
+     *
+     * @param string $jsonApiSecurityHash
+     * @return CronService
+     * @throws \InvalidArgumentException Whenever `$jsonApiSecurityHash` is not a string value.
+     */
+    public function setJsonApiSecurityHash($jsonApiSecurityHash)
+    {
+        if (!is_string($jsonApiSecurityHash)) {
+            throw new \InvalidArgumentException('`jsonApiSecurityHash` expects string value!');
+        }
+
+        $this->options['jsonApiSecurityHash'] = (string) $jsonApiSecurityHash;
         return $this;
     }
 
@@ -329,7 +392,7 @@ class CronService implements CronServiceInterface, ServiceManagerAwareInterface,
     /**
      * Reset (clear) all pending jobs.
      *
-     * @return CronServiceInterface
+     * @return CronService
      */
     public function resetPending()
     {
@@ -339,7 +402,7 @@ class CronService implements CronServiceInterface, ServiceManagerAwareInterface,
     /**
      * Main action - run scheduled jobs and prepare next run.
      *
-     * @return CronServiceInterface
+     * @return CronService
      */
     public function run()
     {
@@ -354,7 +417,7 @@ class CronService implements CronServiceInterface, ServiceManagerAwareInterface,
     /**
      * Run sheduled CRON jobs.
      *
-     * @return CronServiceInterface
+     * @return CronService
      */
     public function process()
     {
@@ -371,7 +434,7 @@ class CronService implements CronServiceInterface, ServiceManagerAwareInterface,
      *
      * Read configuration and insert `CronHelper` database records according to it.
      *
-     * @return CronServiceInterface
+     * @return CronService
      */
     public function schedule()
     {
@@ -386,7 +449,7 @@ class CronService implements CronServiceInterface, ServiceManagerAwareInterface,
     /**
      * Cleanup `CronHelper` database according to set timeout options.
      *
-     * @return CronServiceInterface
+     * @return CronService
      */
     public function cleanup()
     {
@@ -401,7 +464,7 @@ class CronService implements CronServiceInterface, ServiceManagerAwareInterface,
     /**
      * Recover CRON jobs that exceeded `max_execution_time` st in system's `php.ini`.
      *
-     * @return CronServiceInterface
+     * @return CronService
      */
     public function recoverRunning()
     {
@@ -417,7 +480,7 @@ class CronService implements CronServiceInterface, ServiceManagerAwareInterface,
      * @param int|string $frequency
      * @param callback $callback
      * @param array $options (Optional.)
-     * @return CronServiceInterface
+     * @return CronService
      */
     public function register($code, $frequency, $callback, array $options = array())
     {

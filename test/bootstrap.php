@@ -16,6 +16,8 @@ use Zend\ServiceManager\ServiceManager;
 error_reporting(E_ALL | E_STRICT);
 chdir(__DIR__);
 
+defined('TEST_DIR') || define('TEST_DIR', dirname(__FILE__));
+
 /**
  * Test bootstrap, for setting up autoloading
  */

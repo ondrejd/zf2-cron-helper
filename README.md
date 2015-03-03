@@ -13,6 +13,7 @@ Module that simplify dealing with CRON jobs in your PHP projects based on [Zend 
 3. Pre-configured CRON jobs can be modified or triggered outside the regular timeplan
 4. Simple registering one-time CRON jobs directly from the code
 5. Advanced logging features with optional background - defaultly SQLite database but you can provide your own database adapter
+6. `EventManager` is used so you can easilly append new actions
 6. All code is well documented and tested
 
 ## Installation
@@ -112,21 +113,96 @@ And now open it and edit it according to notes there:
  */
 
 return array(
-	'cron_helper' => array(
-		// CronService options
-		'options' => array(/* ... */),
-		// Optionaly you can define CronHelper own database adapter.
-		// If you omit to do that adapter will be searched using
-		// ServiceManager by commonly used alias "dbAdapter".
-		'db' => array(
-			'driver' => 'Pdo_Sqlite',
-			'database' => 'cronhelper.sqlite'
-		),
-		// Here are defined CRON jobs of our application. Keys of these jobs
-		// can be used for triggering them directly from the application
-		// beside the scheduled timeplan.
-		'jobs' => array(/* ... */),
-	),
+    // Example configuration for the `zf2-cron-helper` module
+    'cron_helper' => array(
+        // Main options
+        'options' => array(
+            // Time in minutes for how long ahead CRON jobs have to be scheduled.
+            // This means for how long before the scheduled execution time should
+            // be job inserted into the database (e.g. scheduled).
+            'scheduleAhead' => 1440, // one day before
+            // Time in minutes for how long it takes before the scheduled job
+            // is considered missed.
+            'scheduleLifetime' => 15,
+            // Maximal running time (in minutes) for the each CRON job.
+            // If `0` is set than the set (in `php.ini`) `max_execution_time` is used.
+            'maxRunningTime' => 0,
+            // Time in minutes for how long to keep records about successfully
+            // completed CRON jobs.
+            'successLogLifetime' => 1440, // one day
+            // Time in minutes for how long to keep records about failed CRON jobs.
+            'failureLogLifetime' => 2880, // two days
+            // If `TRUE` then events are emited during processing CRON jobs.
+            // This can be useful if you need to perform other actions related
+            // to executed CRON jobs.
+            'emitEvents' => false,
+            // If `TRUE` then you can access info about current status by simple
+            // JSON API.
+            // This can be useful when you want to provide some sort of UI
+            // to watch or manage CRON jobs.
+            'allowJsonApi' => false,
+            // If JSON API is allowed the security hash MUST BE SET to achive
+            // the full functionality. Otherwise will be available only status
+            // informations but all managment functions will be disabled.
+            'jsonApiSecurityHash' => 'YOUR_SECURITY_HASH',
+        ),
+        // Optionaly you can define CronHelper own database adapter.
+        // If you omit to do that adapter will be searched using
+        // ServiceManager by commonly used alias "dbAdapter".
+        //'db' => array(
+        //	'driver' => 'Pdo_Sqlite',
+        //	'database' => 'cronhelper.sqlite'
+        //),
+        // Here are defined CRON jobs of our application. Keys of these jobs
+        // can be used for triggering them directly from the application
+        // beside the scheduled timeplan.
+        'jobs' => array(
+            // The first example job
+            'job1' => array(
+                // Name/identifier of the job. Can be omitted if is same
+                // as the key of its array.
+                'code' => 'job1',
+                // Frequency of executing. If is omitted than the job will be
+                // executed only on demand.
+                'frequency' => '0 20 * * *',
+                // `RouteTask` defines task that is using existing application's
+                // route as a target job's action.
+                'task' => array(
+                    'type' => 'CronHelper\Service\JobTask\RouteTask',
+                    'options' => array(
+                        'routeName' => 'cron_job1',
+                    ),
+                ),
+                // Optional callback arguments.
+                'args' => array(
+                    'name' => 'value'
+                ),
+            ),
+            // The second example job
+            'job2' => array(
+                'frequency' => '0 0 1 * *',
+                // `CallbackTask` is task that executes regular PHP code.
+                'task' => array(
+                    'type' => 'CronHelper\Service\JobTask\CallbackTask',
+                    'options' => array(
+                        'className' => 'YourClass',
+                        'methodName' => 'doAction',
+                    ),
+                ),
+            ),
+            // The third example job - this job has no frequency defined
+            // so can be executed only on direct demand from the code.
+            'job3' => array(
+                // `ExternalTask` is used for executing external scripts.
+                'task' => array(
+                    'type' => 'CronHelper\Service\JobTask\ExternalTask',
+                    'options' => array(
+                        'command' => '/var/www/renbo/bin/export_dump.sh'
+                    ),
+                ),
+            ),
+        ),
+    ),
 );
 ```
 
@@ -181,5 +257,3 @@ Test code-coverage reports can be found in folder `test/log/report`.
 ```sh
 phpdoc run -d "src" -t "docs/generated" --title "CronHelper Module" --defaultpackagename "CronHelper" -q
 ```
-
-

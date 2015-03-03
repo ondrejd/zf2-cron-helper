@@ -55,7 +55,7 @@ interface CronServiceInterface
 	 * Set options.
 	 *
 	 * @param array $options
-	 * @return array
+	 * @return CronServiceInterface
 	 * @see CronService::getDefaultOptions() There is a detailed options array description.
 	 */
 	public function setOptions(array $options);
@@ -163,6 +163,38 @@ interface CronServiceInterface
 	 * @throws \InvalidArgumentException Whenever `$emitEvents` is not a boolean value.
 	 */
 	public function setEmitEvents($emitEvents);
+
+	/**
+	* Get TRUE if JSON API is allowed.
+	*
+	* @return boolean
+	*/
+	public function getAllowJsonApi();
+
+	/**
+	* Set TRUE if JSON API is allowed.
+	*
+	* @param boolean $allowJsonApi
+	* @return CronService
+	* @throws \InvalidArgumentException Whenever `$allowJsonApi` is not a boolean value.
+	*/
+	public function setAllowJsonApi($allowJsonApi);
+
+	/**
+	 * Get JSON API security hash.
+	 *
+	 * @return string
+	 */
+	public function getJsonApiSecurityHash();
+
+	/**
+	 * Set JSON API security hash.
+	 *
+	 * @param string $jsonApiSecurityHash
+	 * @return CronService
+	 * @throws \InvalidArgumentException Whenever `$jsonApiSecurityHash` is not a string value.
+	 */
+	public function setJsonApiSecurityHash($jsonApiSecurityHash);
 
 	/**
 	 * Returns pending jobs.
